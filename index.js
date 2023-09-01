@@ -1,44 +1,101 @@
 "use strict";
-const sketches = document.querySelectorAll('.sketch');
-var Saturation;
-(function (Saturation) {
-    Saturation[Saturation["Mono"] = 0] = "Mono";
-    Saturation[Saturation["Random"] = 1] = "Random";
-})(Saturation || (Saturation = {}));
-const Options = {
-    box: 5,
-    color: {
-        saturation: Saturation.Random,
-        luminance: {
-            min: 0,
-            max: 100
-        }
+function getRandomHue(option) {
+    return Math.round(Math.random() * (option.max - option.min) + option.min);
+}
+function getRandomSaturation(option) {
+    return Math.round(Math.random() * (option.max - option.min) + option.min);
+}
+function getRandomLuminance(option) {
+    return Math.round(Math.random() * (option.max - option.min) + option.min);
+}
+function getRandomColor(option) {
+    const hue = getRandomHue(option['hue']);
+    const saturation = getRandomSaturation(option['saturation']);
+    const luminance = getRandomLuminance(option['luminance']);
+    return { hue: hue, saturation: saturation, luminance: luminance };
+}
+const defaultColorOptions = {
+    hue: {
+        min: 0,
+        max: 360
+    },
+    saturation: {
+        min: 0,
+        max: 100
+    },
+    luminance: {
+        min: 0,
+        max: 100
     }
 };
-//get random color: To coloring Boxes every time with different colors
-function getRandomColor() {
-}
-function addBoxes(sketch, width = 100) {
-    //add 5*5 boxes
-    for (let i = 0; i < Options.box ** 2; i++) {
-        let box = document.createElement('div');
-        box.className = 'sketch__box';
-        box.style.width = `${width}%`;
-        sketch.appendChild(box);
+class Box {
+    constructor(id, sketch, width = 100, colorOptions = defaultColorOptions, classList = []) {
+        this.classList = [];
+        this.id = id;
+        this.sketch = sketch;
+        this.width = width;
+        this.color = getRandomColor(colorOptions);
+        this.colorOptions = colorOptions;
+        this.classList = classList;
+        this.self = undefined;
+    }
+    add() {
+        let self = document.createElement('div');
+        for (let name of this.classList) {
+            self.classList.add(name);
+        }
+        self.style.width = this.width + '%';
+        self.style.backgroundColor = `hsl(${this.color.hue}, ${this.color.saturation},${this.color.luminance})`;
+        this.sketch.appendChild(self);
+        this.self = self;
     }
 }
-window.addEventListener('load', () => {
-    sketches.forEach((elem) => {
-        const sketch = elem;
-        if (sketch.classList.contains('sketch--flex')) {
-            addBoxes(sketch, 100 / Options.box);
+var ContainerType;
+(function (ContainerType) {
+    ContainerType["Flex"] = "sketch--flex";
+    ContainerType["Grid"] = "sketch--grid";
+})(ContainerType || (ContainerType = {}));
+class Sketch {
+    constructor(id, sketch, type, boxNum = 5, colorOptions = defaultColorOptions) {
+        this.id = id;
+        this.sketch = sketch;
+        this.type = type;
+        this.boxNumber = boxNum;
+        this.boxes = [];
+        this.colorOptions = colorOptions;
+    }
+    initBoxes() {
+        let width = 100;
+        if (this.type === ContainerType.Flex) {
+            width = 100 / this.boxNumber;
         }
-        else if (sketch.classList.contains('sketch--grid')) {
-            addBoxes(sketch);
-            sketch.style.gridTemplate = `repeat(${Options.box}, 1fr) / repeat(${Options.box}, 1fr)`;
+        else if (this.type === ContainerType.Grid) {
+            this.sketch.style.gridTemplate = `repeat(${this.boxNumber}, 1fr) / repeat(${this.boxNumber}, 1fr)`;
+        }
+        for (let i = 0; i < this.boxNumber ** 2; i++) {
+            const box = new Box(`${this.id}-${i}`, this.sketch, width, this.colorOptions, ['sketch__box']);
+            box.add();
+        }
+    }
+}
+const sketches = document.querySelectorAll('.sketch');
+const BOX_NUMBER_IN_ROW = 5;
+window.addEventListener('load', () => {
+    for (let i = 0; i < sketches.length; i++) {
+        const elem = sketches[i];
+        console.log(elem);
+        let type;
+        if (elem.classList.contains(ContainerType.Flex)) {
+            type = ContainerType.Flex;
+        }
+        else if (elem.classList.contains(ContainerType.Grid)) {
+            type = ContainerType.Grid;
         }
         else {
-            throw new Error('found sketch without flex/grid');
+            throw new Error('not found container type class name');
         }
-    });
+        const sketch = new Sketch(`${type}-${i}`, elem, type, BOX_NUMBER_IN_ROW);
+        sketch.initBoxes();
+    }
 });
+// min + value % max loop
