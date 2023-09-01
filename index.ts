@@ -89,7 +89,7 @@ class Box {
             self.classList.add(name);
         }
         self.style.width = this.width + '%';
-        self.style.backgroundColor = `hsl(${this.color.hue}, ${this.color.saturation},${this.color.luminance})`;
+        self.style.backgroundColor = `hsl(${this.color.hue}, ${this.color.saturation}%,${this.color.luminance}%)`;
         this.sketch.appendChild(self);
         this.self = self;
     }
