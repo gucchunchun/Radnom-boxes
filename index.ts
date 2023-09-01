@@ -1,24 +1,38 @@
-const sketches = document.querySelectorAll('.sketch');
+// NumericRange Utility
+type CreateArrayWithLengthX<
+	LENGTH extends number,
+	ACC extends unknown[] = [],
+> = ACC['length'] extends LENGTH
+	? ACC
+	: CreateArrayWithLengthX<LENGTH, [...ACC, 1]>
 
-enum Saturation {
-    Mono,
-    Random
+// To define color saturation and luminance range
+type NumericRange<
+   START_ARR extends number[], 
+   END extends number, 
+   ACC extends number = never
+> = START_ARR['length'] extends END 
+   ? ACC | END
+   : NumericRange<[...START_ARR,1], END, ACC | START_ARR['length']>
+	
+type colorRange = {
+    min: NumericRange<CreateArrayWithLengthX<0>, 99>,
+    max: NumericRange<CreateArrayWithLengthX<1>, 100>,
 }
 interface Options {
     box:number
     color: {
-        saturation: Saturation,
-        luminance: {
-            min: number,
-            max: number
-        }
+        saturation: colorRange,
+        luminance: colorRange
     }
-
 }
 const Options:Options = {
     box: 5,
     color :{
-        saturation: Saturation.Random,
+        saturation: {
+            min: 0,
+            max: 100
+        },
         luminance: {
             min: 0,
             max: 100
@@ -45,6 +59,7 @@ function addBoxes(sketch: HTMLElement, width: number = 100) {
     }  
 }
 
+const sketches = document.querySelectorAll('.sketch');
 window.addEventListener('load', () => {
     sketches.forEach((elem)=>{
         const sketch = elem as HTMLElement;
@@ -59,3 +74,6 @@ window.addEventListener('load', () => {
         }
     })
 });
+
+
+
