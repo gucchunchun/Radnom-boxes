@@ -41,13 +41,7 @@ h1 {
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
 }
-.box {
+.sketch__box {
     aspect-ratio: 1;
     border: 1px solid #000;
-}
-.box--flex {
-    width: 20%;
-}
-.box--grid {
-    width: 100%;
 }
