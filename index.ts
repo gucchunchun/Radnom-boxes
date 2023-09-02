@@ -53,84 +53,169 @@ function getRandomColor(option:ColorOptions): HSLColor {
 
 const defaultColorOptions:ColorOptions = {
     hue:{
-        min: 0,
-        max: 360
+        min: 160,
+        max: 220
     },
     saturation: {
-        min: 0,
-        max: 100
+        min: 30,
+        max: 90
     },
     luminance: {
-        min: 0,
-        max: 100
+        min: 30,
+        max: 80
     }
 }
+interface BoxFeature {
+    id: string
+    sketch: HTMLElement
+    width: number
+    colorOptions:ColorOptions
+    color: HSLColor
+    classList:string[]
+}
 class Box {
-    //add decorater
-    private id:string
-    private sketch:HTMLElement
-    private width:number
-    private color:HSLColor
-    private colorOptions:ColorOptions
-    private classList:string[] = [];
-    private self:(HTMLElement|undefined);
-    constructor(id:string, sketch: HTMLElement, width: number=100, colorOptions:ColorOptions=defaultColorOptions, classList:string[]=[]) {
-        this.id = id;
-        this.sketch = sketch;
-        this.width = width;
-        this.color = getRandomColor(colorOptions);
-        this.colorOptions = colorOptions;
-        this.classList = classList;
-        this.self = undefined;
+    private _self: HTMLElement | undefined;
+
+    constructor(
+        public id: string,
+        private _sketch: HTMLElement,
+        private _width: number = 100,
+        private _colorOptions: ColorOptions = defaultColorOptions,
+        private _color: HSLColor = getRandomColor(_colorOptions),
+        private _classList: string[] = []
+    ) {
+        this._self = undefined;
     }
+
     add() {
         let self = document.createElement('div');
-        for(let name of this.classList) {
+        //default className
+        self.classList.add('sketch__box');
+        //additional className for style changes
+        for(let name of this._classList) {
             self.classList.add(name);
         }
-        self.style.width = this.width + '%';
-        self.style.backgroundColor = `hsl(${this.color.hue}, ${this.color.saturation}%,${this.color.luminance}%)`;
-        this.sketch.appendChild(self);
-        this.self = self;
+        self.style.width = this._width + '%';
+        self.style.backgroundColor = `hsl(${this._color.hue}, ${this._color.saturation}%,${this._color.luminance}%)`;
+        self.addEventListener('click', () =>{
+            this.update({color: {hue: 10, saturation: 50, luminance: 70}});
+        });
+        this._sketch.appendChild(self);
+        this._self = self;
+    }
+
+    update(updateFeature:Partial<Omit<BoxFeature, 'id'|'sketch'>>) {
+        let box = this._self
+        if(!box) {
+            throw new Error('Target box element can not be found')
+        }
+        if(updateFeature.width) {
+            this._width = updateFeature.width;
+            box.style.width = this._width + '%';
+        }
+        // color is more primary than getting random color with colorOptions
+        if(updateFeature.color) {
+            this._color = updateFeature.color;
+            box.style.backgroundColor = `hsl(${this._color.hue}, ${this._color.saturation}%,${this._color.luminance}%)`;
+            this._colorOptions = {
+                hue: {
+                    min: updateFeature.color.hue,
+                    max: updateFeature.color.hue
+                },
+                saturation: {
+                    min: updateFeature.color.saturation,
+                    max: updateFeature.color.saturation
+                },
+                luminance: {
+                    min: updateFeature.color.luminance,
+                    max: updateFeature.color.luminance
+                },
+            }
+        }else if(updateFeature.colorOptions) {
+            this._colorOptions = updateFeature.colorOptions;
+        }   
+        if(updateFeature.classList) {
+            this._classList = updateFeature.classList;
+            for(let name of box.classList) {
+                if(name === 'sketch__box') {
+                    return
+                }else if(updateFeature.classList.includes(name)){
+                    const index = updateFeature.classList.indexOf(name);
+                    updateFeature.classList.splice(index,1);
+                    return
+                }else {
+                    box.classList.remove(name);
+                }
+            }
+            for(let newName of updateFeature.classList) {
+                box.classList.add(newName);
+            }
+        }
+        
     }
 }
 enum ContainerType {
     Flex = 'sketch--flex',
     Grid = 'sketch--grid'
 }
+interface SketchFeature {
+    id:string
+    sketch:HTMLElement
+    type: ContainerType
+    boxNumber: number
+    colorOptions:ColorOptions
+}
 class Sketch {
-    public boxNumber: number
-    public boxes: Box[]
-    public type: ContainerType
-    private id:string
-    private sketch: HTMLElement
-    private colorOptions:ColorOptions
-    
-    constructor(id:string, sketch: HTMLElement, type: ContainerType, boxNum: number = 5, colorOptions:ColorOptions=defaultColorOptions) {
-        this.id = id;
-        this.sketch = sketch;
-        this.type = type;
-        this.boxNumber = boxNum;
-        this.boxes = [];
-        this.colorOptions = colorOptions;
+    private _boxes:Box[];
+    constructor(
+        private _id: string,
+        private _self: HTMLElement,
+        private _type: ContainerType,
+        private _boxNumber: number = 5,
+        private _colorOptions: ColorOptions = defaultColorOptions
+    ) {
+        this._boxes = [];
+    }
+
+    getBoxNumber(): number {
+        return this._boxNumber;
     }
 
     initBoxes() {
         let width = 100;
-        if(this.type === ContainerType.Flex) {
-            width = 100 / this.boxNumber;
-        }else if(this.type === ContainerType.Grid) {
-            this.sketch.style.gridTemplate = `repeat(${this.boxNumber}, 1fr) / repeat(${this.boxNumber}, 1fr)`;
+        if(this._type === ContainerType.Flex) {
+            width = 100 / this._boxNumber;
+        }else if(this._type === ContainerType.Grid) {
+            this._self.style.gridTemplate = `repeat(${this._boxNumber}, 1fr) / repeat(${this._boxNumber}, 1fr)`;
         }
-        for (let i = 0; i < this.boxNumber ** 2; i++) {
-            const box = new Box(`${this.id}-${i}`,this.sketch, width, this.colorOptions, ['sketch__box']);
+        for (let i = 0; i < this._boxNumber ** 2; i++) {
+            const box = new Box(`${this._id}-${i}`,this._self, width, this._colorOptions);
             box.add();
+            this._boxes.push(box);
         }  
+    }
+    
+    updateBoxes(updateFeature:Partial<Omit<BoxFeature, 'id'|'sketch'|'width'>>, ...ids:number[]) {
+        if(ids) {
+            for(let i = 0; i < ids.length; i++) {
+                const id = `${this._id}-${ids[i]}`;
+                const targetBox = this._boxes[ids[i]];
+                if(targetBox.id === id){
+                    targetBox.update(updateFeature);
+                }else {
+                    throw new Error('something wrong with naming ID')
+                }
+            }
+        }else {
+            for(let i = 0; i < this._boxes.length; i++) {
+                this._boxes[i].update(updateFeature);
+            }
+        }
     }
 }
 
 const sketches = document.querySelectorAll('.sketch');
-const BOX_NUMBER_IN_ROW = 5;
+const BOX_NUMBER_IN_ROW = 10;
 window.addEventListener('load', () => {
     for(let i=0; i < sketches.length; i++) {
         const elem = sketches[i] as HTMLElement;

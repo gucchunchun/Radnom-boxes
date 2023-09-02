@@ -29,7 +29,6 @@ h1 {
 .sketch {
     width: 90%;
     aspect-ratio: 1;
-    border: 1px solid #000;
 }
 .sketch--flex {
     display: flex;
@@ -43,5 +42,8 @@ h1 {
 }
 .sketch__box {
     aspect-ratio: 1;
-    border: 1px solid #000;
+    transition: all 0.2s;
+}
+.sketch__box:hover {
+    opacity: 0.2;
 }
