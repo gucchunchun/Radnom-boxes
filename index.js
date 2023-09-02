@@ -48,7 +48,7 @@ class Box {
         }
         self.style.width = this._width + '%';
         self.style.backgroundColor = `hsl(${this._color.hue}, ${this._color.saturation}%,${this._color.luminance}%)`;
-        self.addEventListener('click', () => {
+        self.addEventListener('mouseover', () => {
             this.update({ colorOptions: this._colorOptions });
         });
         if (insertBeforeElement) {
