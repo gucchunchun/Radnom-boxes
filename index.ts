@@ -53,16 +53,16 @@ function getRandomColor(option:ColorOptions): HSLColor {
 
 const defaultColorOptions:ColorOptions = {
     hue:{
-        min: 160,
-        max: 220
+        min: 0,
+        max: 360
     },
     saturation: {
-        min: 30,
-        max: 90
+        min: 0,
+        max: 100
     },
     luminance: {
-        min: 30,
-        max: 80
+        min: 0,
+        max: 100
     }
 }
 type BoxPosition = {
@@ -89,7 +89,7 @@ class Box {
         private _classList: string[] = []
     ) {}
 
-    add() {
+    add(insertBeforeElement: (HTMLElement|undefined)=undefined): void {
         let self = document.createElement('div');
         //default className
         self.classList.add('sketch__box');
@@ -100,9 +100,13 @@ class Box {
         self.style.width = this._width + '%';
         self.style.backgroundColor = `hsl(${this._color.hue}, ${this._color.saturation}%,${this._color.luminance}%)`;
         self.addEventListener('click', () =>{
-            this.update({color: {hue: 10, saturation: 50, luminance: 70}});
+            this.update({colorOptions: this._colorOptions});
         });
-        this._sketch.appendChild(self);
+        if(insertBeforeElement) {
+            this._sketch.insertBefore(self, insertBeforeElement);
+        }else {
+             this._sketch.appendChild(self);
+        }
         this.self = self;
     }
 
@@ -135,6 +139,8 @@ class Box {
             }
         }else if(updateFeature.colorOptions) {
             this._colorOptions = updateFeature.colorOptions;
+            this._color = getRandomColor(this._colorOptions);
+            box.style.backgroundColor = `hsl(${this._color.hue}, ${this._color.saturation}%,${this._color.luminance}%)`;
         }   
         if(updateFeature.classList) {
             this._classList = updateFeature.classList;
@@ -154,7 +160,6 @@ class Box {
                 }
             }
         }
-        
     }
 }
 enum ContainerType {
@@ -223,26 +228,52 @@ class Sketch {
     }
 
     addRow(addingNumber: number) {
+        if(addingNumber <= 0) {
+            throw new Error('Adding number of box must be greater than zero');
+        }
         const currentBoxInRow = this._boxInRow;
         this._boxInRow += addingNumber;
         const edgeBoxes = this._boxes.filter((box, index)=>index%currentBoxInRow===currentBoxInRow-1);
-        for(let i=0; i<this._boxes.length; i++) {
-            for(let k = 0; k < this._boxes[i].length; k++){
-                const box = this._boxes[i][k];
-                if(this._type === ContainerType.Flex) {
-                    box.update({width:  100 / this._boxInRow});
-                }
-                if(k % currentBoxInRow === currentBoxInRow-1) {
-                    // const newBox = new Box()
+        let width = 100;
+        if(this._type === ContainerType.Grid) {
+            this._self.style.gridTemplate = `repeat(${this._boxInRow}, 1fr) / repeat(${this._boxInRow}, 1fr)`;
+        }
+        for(let i=0; i<this._boxInRow; i++) {
+            //new column
+            if(currentBoxInRow-1 < i) {
+                this._boxes.push([]);
+                for(let k = 0; k < this._boxInRow; k++) {
+                    const box = new Box({row: i, col:k},this._self, width);
+                    box.add();
+                    this._boxes[i].push(box);
                 }
             }
+            //already exist column
+            else {
+                for(let k = 0; k < this._boxes[i].length; k++){
+                const box = this._boxes[i][k];
+                box.position.row += addingNumber;
+                if(this._type === ContainerType.Flex) {
+                    width = 100 / this._boxInRow;
+                    box.update({width: width});
+                }
+                if(k === 0) {
+                    for(let m = 0; m < addingNumber; m++) {
+                        const new_box = new Box({row: i, col:m},this._self, width);
+                        new_box.add(box.self);
+                        this._boxes[i].splice(m,0,new_box);
+                    }
+                }
+                }
+            }
+            
         }
 
     }
 }
 
 const sketches = document.querySelectorAll('.sketch');
-const BOX_NUMBER_IN_ROW = 10;
+const BOX_NUMBER_IN_ROW = 8;
 window.addEventListener('load', () => {
     for(let i=0; i < sketches.length; i++) {
         const elem = sketches[i] as HTMLElement;

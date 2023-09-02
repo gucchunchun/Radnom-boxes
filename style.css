@@ -33,7 +33,7 @@ h1 {
 .sketch--flex {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-end;
 }
 .sketch--grid {
     display: grid;
@@ -42,8 +42,7 @@ h1 {
 }
 .sketch__box {
     aspect-ratio: 1;
-    transition: all 0.2s;
 }
 .sketch__box:hover {
-    opacity: 0.2;
+    opacity: 0.3;
 }
