@@ -286,14 +286,15 @@ class Sketch {
                 if(!box.self) {
                     throw new Error(`Box position row:${i}, column:${j} is not available`);
                 }
-                if(this._boxInRow-1 < i || this._boxInRow-1 < j) {
+                if(i <= this._boxInRow-1 && j <= this._boxInRow-1) {
+                    if(this._type == ContainerType.Flex) {
+                        box.update({width: 100 / this._boxInRow});
+                    }
+                    new_boxes[i].push(box);
+                }else {
+                    //remove from DOM
                     this._self.removeChild(box.self);
-                    continue;
                 }
-                if(this._type == ContainerType.Flex) {
-                    box.update({width: 100 / this._boxInRow});
-                }
-                new_boxes[i].push(box);
             }
         }
         this._boxes = new_boxes;
