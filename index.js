@@ -29,21 +29,21 @@ const defaultColorOptions = {
     }
 };
 class Box {
-    constructor(id, _sketch, _width = 100, _colorOptions = defaultColorOptions, _color = getRandomColor(_colorOptions), _classList = []) {
-        this.id = id;
+    constructor(position, _sketch, _width = 100, _colorOptions = defaultColorOptions, _color = getRandomColor(_colorOptions), _classList = []) {
+        this.position = position;
         this._sketch = _sketch;
         this._width = _width;
         this._colorOptions = _colorOptions;
         this._color = _color;
         this._classList = _classList;
-        this._self = undefined;
+        this.self = undefined;
     }
     add() {
         let self = document.createElement('div');
         //default className
         self.classList.add('sketch__box');
         //additional className for style changes
-        for (let name of this._classList) {
+        for (const name of this._classList) {
             self.classList.add(name);
         }
         self.style.width = this._width + '%';
@@ -52,10 +52,10 @@ class Box {
             this.update({ color: { hue: 10, saturation: 50, luminance: 70 } });
         });
         this._sketch.appendChild(self);
-        this._self = self;
+        this.self = self;
     }
     update(updateFeature) {
-        let box = this._self;
+        let box = this.self;
         if (!box) {
             throw new Error('Target box element can not be found');
         }
@@ -87,21 +87,18 @@ class Box {
         }
         if (updateFeature.classList) {
             this._classList = updateFeature.classList;
-            for (let name of box.classList) {
-                if (name === 'sketch__box') {
-                    return;
-                }
-                else if (updateFeature.classList.includes(name)) {
-                    const index = updateFeature.classList.indexOf(name);
-                    updateFeature.classList.splice(index, 1);
-                    return;
-                }
-                else {
-                    box.classList.remove(name);
+            const boxClassList = box.classList;
+            // Remove any class not present in the updated class list
+            for (const name of boxClassList) {
+                if (name !== 'sketch__box' && !this._classList.includes(name)) {
+                    boxClassList.remove(name);
                 }
             }
-            for (let newName of updateFeature.classList) {
-                box.classList.add(newName);
+            // Add any new classes from the updated class list
+            for (const newName of this._classList) {
+                if (newName !== 'sketch__box' && !boxClassList.contains(newName)) {
+                    boxClassList.add(newName);
+                }
             }
         }
     }
@@ -112,47 +109,69 @@ var ContainerType;
     ContainerType["Grid"] = "sketch--grid";
 })(ContainerType || (ContainerType = {}));
 class Sketch {
-    constructor(_id, _self, _type, _boxNumber = 5, _colorOptions = defaultColorOptions) {
+    constructor(_id, _self, _type, _boxInRow = 5, _colorOptions = defaultColorOptions) {
         this._id = _id;
         this._self = _self;
         this._type = _type;
-        this._boxNumber = _boxNumber;
+        this._boxInRow = _boxInRow;
         this._colorOptions = _colorOptions;
         this._boxes = [];
     }
     getBoxNumber() {
-        return this._boxNumber;
+        return this._boxInRow;
     }
     initBoxes() {
         let width = 100;
         if (this._type === ContainerType.Flex) {
-            width = 100 / this._boxNumber;
+            width = 100 / this._boxInRow;
         }
         else if (this._type === ContainerType.Grid) {
-            this._self.style.gridTemplate = `repeat(${this._boxNumber}, 1fr) / repeat(${this._boxNumber}, 1fr)`;
+            this._self.style.gridTemplate = `repeat(${this._boxInRow}, 1fr) / repeat(${this._boxInRow}, 1fr)`;
         }
-        for (let i = 0; i < this._boxNumber ** 2; i++) {
-            const box = new Box(`${this._id}-${i}`, this._self, width, this._colorOptions);
-            box.add();
-            this._boxes.push(box);
+        for (let i = 0; i < this._boxInRow; i++) {
+            this._boxes.push([]);
+            for (let k = 0; k < this._boxInRow; k++) {
+                const box = new Box({ row: i, col: k }, this._self, width, this._colorOptions);
+                box.add();
+                this._boxes[i].push(box);
+            }
         }
     }
-    updateBoxes(updateFeature, ...ids) {
-        if (ids) {
-            for (let i = 0; i < ids.length; i++) {
-                const id = `${this._id}-${ids[i]}`;
-                const targetBox = this._boxes[ids[i]];
-                if (targetBox.id === id) {
+    updateBoxes(updateFeature, ...positions) {
+        if (positions) {
+            for (let i = 0; i < positions.length; i++) {
+                const row = positions[i].row;
+                const col = positions[i].col;
+                const targetBox = this._boxes[row][col];
+                if (targetBox.position === positions[i]) {
                     targetBox.update(updateFeature);
                 }
                 else {
-                    throw new Error('something wrong with naming ID');
+                    throw new Error(`can not find Box with position:${positions[i]}`);
                 }
             }
         }
         else {
             for (let i = 0; i < this._boxes.length; i++) {
-                this._boxes[i].update(updateFeature);
+                for (let k = 0; k < this._boxes[i].length; k++) {
+                    this._boxes[i][k].update(updateFeature);
+                }
+            }
+        }
+    }
+    addRow(addingNumber) {
+        const currentBoxInRow = this._boxInRow;
+        this._boxInRow += addingNumber;
+        const edgeBoxes = this._boxes.filter((box, index) => index % currentBoxInRow === currentBoxInRow - 1);
+        for (let i = 0; i < this._boxes.length; i++) {
+            for (let k = 0; k < this._boxes[i].length; k++) {
+                const box = this._boxes[i][k];
+                if (this._type === ContainerType.Flex) {
+                    box.update({ width: 100 / this._boxInRow });
+                }
+                if (k % currentBoxInRow === currentBoxInRow - 1) {
+                    // const newBox = new Box()
+                }
             }
         }
     }
@@ -162,7 +181,6 @@ const BOX_NUMBER_IN_ROW = 10;
 window.addEventListener('load', () => {
     for (let i = 0; i < sketches.length; i++) {
         const elem = sketches[i];
-        console.log(elem);
         let type;
         if (elem.classList.contains(ContainerType.Flex)) {
             type = ContainerType.Flex;
