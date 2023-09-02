@@ -116,8 +116,7 @@ var ContainerType;
     ContainerType["Grid"] = "sketch--grid";
 })(ContainerType || (ContainerType = {}));
 class Sketch {
-    constructor(_id, _self, _type, _boxInRow = 5, _colorOptions = defaultColorOptions) {
-        this._id = _id;
+    constructor(_self, _type, _boxInRow = 5, _colorOptions = defaultColorOptions) {
         this._self = _self;
         this._type = _type;
         this._boxInRow = _boxInRow;
@@ -137,8 +136,8 @@ class Sketch {
         }
         for (let i = 0; i < this._boxInRow; i++) {
             this._boxes.push([]);
-            for (let k = 0; k < this._boxInRow; k++) {
-                const box = new Box({ row: i, col: k }, this._self, width, this._colorOptions);
+            for (let j = 0; j < this._boxInRow; j++) {
+                const box = new Box({ row: i, col: j }, this._self, width, this._colorOptions);
                 box.add();
                 this._boxes[i].push(box);
             }
@@ -160,8 +159,8 @@ class Sketch {
         }
         else {
             for (let i = 0; i < this._boxes.length; i++) {
-                for (let k = 0; k < this._boxes[i].length; k++) {
-                    this._boxes[i][k].update(updateFeature);
+                for (let j = 0; j < this._boxes[i].length; j++) {
+                    this._boxes[i][j].update(updateFeature);
                 }
             }
         }
@@ -172,7 +171,6 @@ class Sketch {
         }
         const currentBoxInRow = this._boxInRow;
         this._boxInRow += addingNumber;
-        const edgeBoxes = this._boxes.filter((box, index) => index % currentBoxInRow === currentBoxInRow - 1);
         let width = 100;
         if (this._type === ContainerType.Grid) {
             this._self.style.gridTemplate = `repeat(${this._boxInRow}, 1fr) / repeat(${this._boxInRow}, 1fr)`;
@@ -181,50 +179,102 @@ class Sketch {
             //new column
             if (currentBoxInRow - 1 < i) {
                 this._boxes.push([]);
-                for (let k = 0; k < this._boxInRow; k++) {
-                    const box = new Box({ row: i, col: k }, this._self, width);
+                for (let j = 0; j < this._boxInRow; j++) {
+                    const box = new Box({ row: i, col: j }, this._self, width);
                     box.add();
                     this._boxes[i].push(box);
                 }
             }
             //already exist column
             else {
-                for (let k = 0; k < this._boxes[i].length; k++) {
-                    const box = this._boxes[i][k];
+                for (let j = 0; j < this._boxes[i].length; j++) {
+                    const box = this._boxes[i][j];
                     box.position.row += addingNumber;
                     if (this._type === ContainerType.Flex) {
                         width = 100 / this._boxInRow;
                         box.update({ width: width });
                     }
-                    if (k === 0) {
-                        for (let m = 0; m < addingNumber; m++) {
-                            const new_box = new Box({ row: i, col: m }, this._self, width);
+                    if (j === 0) {
+                        for (let k = 0; k < addingNumber; k++) {
+                            const new_box = new Box({ row: i, col: k }, this._self, width);
                             new_box.add(box.self);
-                            this._boxes[i].splice(m, 0, new_box);
+                            this._boxes[i].splice(k, 0, new_box);
                         }
                     }
                 }
             }
         }
     }
+    delRow(deletingNumber) {
+        if (deletingNumber <= 0) {
+            throw new Error('Adding number of box must be greater than zero');
+        }
+        this._boxInRow -= deletingNumber;
+        if (this._type === ContainerType.Grid) {
+            this._self.style.gridTemplate = `repeat(${this._boxInRow}, 1fr) / repeat(${this._boxInRow}, 1fr)`;
+        }
+        let new_boxes = [];
+        for (let i = 0; i < this._boxes.length; i++) {
+            if (i <= this._boxInRow - 1) {
+                new_boxes.push([]);
+            }
+            for (let j = 0; j < this._boxes[i].length; j++) {
+                const box = this._boxes[i][j];
+                if (!box.self) {
+                    throw new Error(`Box position row:${i}, column:${j} is not available`);
+                }
+                if (this._boxInRow - 1 < i || this._boxInRow - 1 < j) {
+                    this._self.removeChild(box.self);
+                    continue;
+                }
+                if (this._type == ContainerType.Flex) {
+                    box.update({ width: 100 / this._boxInRow });
+                }
+                new_boxes[i].push(box);
+            }
+        }
+        this._boxes = new_boxes;
+    }
 }
 const sketches = document.querySelectorAll('.sketch');
+const addRowFlex = document.querySelector('#add-row--flex');
+const delRowFlex = document.querySelector('#del-row--flex');
+const addRowGrid = document.querySelector('#add-row--grid');
+const delRowGrid = document.querySelector('#del-row--grid');
 const BOX_NUMBER_IN_ROW = 8;
+let sketchFlex;
+let sketchGrid;
 window.addEventListener('load', () => {
     for (let i = 0; i < sketches.length; i++) {
         const elem = sketches[i];
         let type;
         if (elem.classList.contains(ContainerType.Flex)) {
             type = ContainerType.Flex;
+            const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+            sketch.initBoxes();
+            sketchFlex = sketch;
+            addRowFlex === null || addRowFlex === void 0 ? void 0 : addRowFlex.addEventListener('click', () => {
+                sketch.addRow(1);
+            });
+            delRowFlex === null || delRowFlex === void 0 ? void 0 : delRowFlex.addEventListener('click', () => {
+                sketch.delRow(1);
+            });
         }
         else if (elem.classList.contains(ContainerType.Grid)) {
             type = ContainerType.Grid;
+            const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+            sketch.initBoxes();
+            sketchGrid = sketch;
+            addRowGrid === null || addRowGrid === void 0 ? void 0 : addRowGrid.addEventListener('click', () => {
+                sketch.addRow(1);
+            });
+            delRowGrid === null || delRowGrid === void 0 ? void 0 : delRowGrid.addEventListener('click', () => {
+                sketch.delRow(1);
+            });
         }
         else {
             throw new Error('not found container type class name');
         }
-        const sketch = new Sketch(`${type}-${i}`, elem, type, BOX_NUMBER_IN_ROW);
-        sketch.initBoxes();
     }
 });
 // min + value % max loop
