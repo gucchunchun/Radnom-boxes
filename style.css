@@ -66,8 +66,9 @@ h1 {
     width: 100%;
     text-align: center;;
 }
-.sketch--ctr {
+.sketch--ctr{
     width: 50%;
+    min-width: 250px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -101,12 +102,8 @@ h1 {
 .sketch__box:hover {
     opacity: 0.3;
 }
-.setting {
+.sketch__setting-ctr {
     width: 100%;
-    display: flex;
-}
-.setting-ctr {
-    width: 50%;
     display: flex;
     justify-content: center;
 }

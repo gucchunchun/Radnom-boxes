@@ -243,7 +243,7 @@ const addRowFlex = document.querySelector('#add-row--flex');
 const delRowFlex = document.querySelector('#del-row--flex');
 const addRowGrid = document.querySelector('#add-row--grid');
 const delRowGrid = document.querySelector('#del-row--grid');
-const BOX_NUMBER_IN_ROW = 8;
+const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
 let sketchGrid;
 window.addEventListener('load', () => {
