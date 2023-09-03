@@ -253,6 +253,7 @@ const colorOptionSetButton = document.querySelectorAll('.color-option__set');
 const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
 let sketchGrid;
+const inputEvent = new Event('input');
 window.addEventListener('load', () => {
     for (let i = 0; i < sketches.length; i++) {
         const elem = sketches[i];
@@ -310,6 +311,10 @@ rangeMin === null || rangeMin === void 0 ? void 0 : rangeMin.forEach((elem) => {
         }
         progress.style.width = (100 - marginRight - percent) + '%';
     });
+    numMin.addEventListener('change', () => {
+        rangeInput.value = numMin.value;
+        rangeInput.dispatchEvent(inputEvent);
+    });
 });
 rangeMax === null || rangeMax === void 0 ? void 0 : rangeMax.forEach((elem) => {
     var _a, _b;
@@ -334,6 +339,10 @@ rangeMax === null || rangeMax === void 0 ? void 0 : rangeMax.forEach((elem) => {
             marginLeft = 0;
         }
         progress.style.width = (100 - marginLeft - percent) + '%';
+    });
+    numMax.addEventListener('change', () => {
+        rangeInput.value = numMax.value;
+        rangeInput.dispatchEvent(inputEvent);
     });
 });
 // min + value % max loop
