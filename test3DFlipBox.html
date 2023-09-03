@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3d flip box</title>
+    <style type="text/css">
+      body {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .flip-box {
+        --width: 300px;
+        --height: 200px;
+        --c--bg: rgba(255, 255, 255, 1);
+        position: relative;
+        width: var(--width);
+        height: var(--height);
+        background-color: var(--c--bg);
+        transform-style: preserve-3d;
+        transition: all 1s;
+      }
+      .flip-box:hover {
+        transform: rotateX(-90deg);
+      }
+      .flip-box__side {
+        --angle: 0deg;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: var(--width);
+        height: var(--height);
+        border: 3px solid blue;
+        background-color: var(--c--bg);
+        transform: translate(-50%, -50%) rotateX(var(--angle))
+          translate3d(0, 0, calc(var(--height) * 0.5));
+      }
+      .flip-box__side:nth-of-type(1) {
+        --angle: 0deg;
+      }
+      .flip-box__side:nth-of-type(2) {
+        --angle: 90deg;
+      }
+      .flip-box__side:nth-of-type(3) {
+        --angle: 180deg;
+      }
+      .flip-box__side:nth-of-type(4) {
+        --angle: -90deg;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flip-box">
+      <div class="flip-box__side">fist</div>
+      <!-- /.flip-box__side -->
+      <div class="flip-box__side">second</div>
+      <!-- /.flip-box__side -->
+      <div class="flip-box__side">third</div>
+      <!-- /.flip-box__side -->
+      <div class="flip-box__side">forth</div>
+      <!-- /.flip-box__side -->
+    </div>
+    <!-- left round along with axis-->
+    <script></script>
+  </body>
+</html>

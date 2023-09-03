@@ -16,6 +16,9 @@
 
     --font-weight--light: 300;
     --font-weight--bold: 800;
+
+    --flip--width: 500px;
+    --flip--height: 160px;
 }
 
 /* Reset */
@@ -145,12 +148,21 @@ body {
 }
 /*  Color-Option(hue/saturation/luminance) */
 .color-option {
-    width: 100%;
-    padding: 0 10%;
+    width: 95%;
     height: fit-content;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: scroll;
+}
+.color-option.flip-box {
+    transition: all 0.5s;
+    position: relative;
+    height: var(--flip--height);
+    transform-style: preserve-3d;
+    overflow-x: visible;
+}
+.color-option.flip-box:hover {
+    transform: rotateY(-90deg);
 }
 .color-option__ctr {
     width: 100%;
@@ -164,6 +176,29 @@ body {
     align-items: center;
     color: rgb(var(--c--tertiary));
 }
+.color-option__ctr.flip-box__side {
+    --angle: 0deg;
+    position: absolute;
+    height: 100%;
+    left: 50%;
+    top: 50%;
+    background-color: rgb(var(--c--bg));
+    transform: translate(-50%, -50%) rotateY(var(--angle))
+      translate3d(0, 0, calc(var(--flip--width) * 0.5));
+}
+.color-option__ctr.flip-box__side:nth-of-type(1) {
+    --angle: 0deg;
+}
+.color-option__ctr.flip-box__side:nth-of-type(2) {
+    --angle: 90deg;
+}
+.color-option__ctr.flip-box__side:nth-of-type(3) {
+    --angle: 180deg;
+}
+.color-option__ctr.flip-box__side:nth-of-type(4) {
+    --angle: -90deg;
+}
+
 .color-option__field {
     width: 100%;
     display: flex;
@@ -243,10 +278,6 @@ input.color-option__range[type="range"]::-webkit-slider-runnable-track {
 @media only screen and (max-width: 480px) {
     .sketch__setting-ctr {
         width: 100vw;
-    }
-    .color-option {
-        width: 95%;
-        padding: 0;
     }
     .color-option__field {
         flex-wrap: nowrap;

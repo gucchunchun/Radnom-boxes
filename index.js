@@ -310,11 +310,21 @@ function validateInputValue(input, isMin = false, isHue = false) {
 const sketches = document.querySelectorAll('.sketch');
 const rowManipButtons = document.querySelectorAll('.button--row-manip');
 const rangeInputs = document.querySelectorAll('.color-option__range');
-const colorOptionSetButton = document.querySelectorAll('.color-option__set');
+const flipBox = document.querySelector('.flip-box');
+const root = document.querySelector(':root');
 const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
 let sketchGrid;
-const inputEvent = new Event('input');
+function resizeFlipBox() {
+    if (!flipBox) {
+        throw new Error('flip-box is not found');
+    }
+    if (!root) {
+        throw new Error(':root is not found');
+    }
+    const width = flipBox.clientWidth + 'px';
+    root.style.setProperty('--flip--width', width);
+}
 for (let i = 0; i < sketches.length; i++) {
     const elem = sketches[i];
     let type;
@@ -403,5 +413,7 @@ rangeInputs.forEach((input) => {
         sketch.updateColorOptions(new_value, optionName, isMin);
     });
 });
+resizeFlipBox();
+window.addEventListener('resize', resizeFlipBox);
 // min + value % max loop
 //# sourceMappingURL=index.js.map
