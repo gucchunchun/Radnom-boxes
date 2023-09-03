@@ -118,7 +118,8 @@ body {
     align-items: center;
 }
 .setting__button {
-    width: 5rem;
+    width: 6rem;
+    max-width: fit-content;
     padding: 0.5rem 1rem;
     margin: 1rem;
     border-radius: 5px;
@@ -126,6 +127,7 @@ body {
     color: rgb(var(--c--bg));
     font-size: 1rem;
     font-weight: var(--font-weight--bold);
+    text-transform: uppercase;
 }
 .setting__button:hover {
     background-color: rgb(var(--c--tertiary));
@@ -157,6 +159,7 @@ body {
 .color-option__title {
     font-size: var(--font-size--h5);
     font-weight: var(--font-weight--bold);
+    text-transform: capitalize;
 }
 /*  Number input  */
 .field--num {
