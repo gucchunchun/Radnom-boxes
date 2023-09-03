@@ -154,6 +154,7 @@ class Sketch {
             }
         }
     }
+    //use less??
     updateBoxes(updateFeature, ...positions) {
         if (0 < positions.length) {
             for (let i = 0; i < positions.length; i++) {
@@ -172,16 +173,24 @@ class Sketch {
             if (updateFeature.colorOptions) {
                 this._colorOptions = updateFeature.colorOptions;
             }
-            for (let i = 0; i < this._boxes.length; i++) {
-                for (let j = 0; j < this._boxes[i].length; j++) {
-                    this._boxes[i][j].update(updateFeature);
-                }
-            }
         }
     }
     updateColorOptions(value, optionName, isMin = false) {
         let newColorOptions = this._colorOptions;
-        // newColorOptions[optionName]
+        if (Object.values(ColorOption).includes(optionName)) {
+            if (isMin) {
+                newColorOptions[optionName].min = value;
+            }
+            else {
+                newColorOptions[optionName].max = value;
+            }
+        }
+        this._colorOptions = newColorOptions;
+        for (let i = 0; i < this._boxes.length; i++) {
+            for (let j = 0; j < this._boxes[i].length; j++) {
+                this._boxes[i][j].update({ colorOptions: this._colorOptions });
+            }
+        }
     }
     addRow(addingNumber) {
         if (addingNumber <= 0) {
@@ -309,46 +318,45 @@ const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
 let sketchGrid;
 const inputEvent = new Event('input');
-window.addEventListener('load', () => {
-    for (let i = 0; i < sketches.length; i++) {
-        const elem = sketches[i];
-        let type;
-        if (elem.classList.contains(ContainerType.Flex)) {
-            type = ContainerType.Flex;
-            const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
-            sketch.initBoxes();
-            sketchFlex = sketch;
-            addRowFlex === null || addRowFlex === void 0 ? void 0 : addRowFlex.addEventListener('click', () => {
-                sketch.addRow(1);
-            });
-            delRowFlex === null || delRowFlex === void 0 ? void 0 : delRowFlex.addEventListener('click', () => {
-                sketch.delRow(1);
-            });
-        }
-        else if (elem.classList.contains(ContainerType.Grid)) {
-            type = ContainerType.Grid;
-            const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
-            sketch.initBoxes();
-            sketchGrid = sketch;
-            addRowGrid === null || addRowGrid === void 0 ? void 0 : addRowGrid.addEventListener('click', () => {
-                sketch.addRow(1);
-            });
-            delRowGrid === null || delRowGrid === void 0 ? void 0 : delRowGrid.addEventListener('click', () => {
-                sketch.delRow(1);
-            });
-        }
-        else {
-            throw new Error('not found container type class name');
-        }
+for (let i = 0; i < sketches.length; i++) {
+    const elem = sketches[i];
+    let type;
+    if (elem.classList.contains(ContainerType.Flex)) {
+        type = ContainerType.Flex;
+        const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+        sketch.initBoxes();
+        sketchFlex = sketch;
+        addRowFlex === null || addRowFlex === void 0 ? void 0 : addRowFlex.addEventListener('click', () => {
+            sketch.addRow(1);
+        });
+        delRowFlex === null || delRowFlex === void 0 ? void 0 : delRowFlex.addEventListener('click', () => {
+            sketch.delRow(1);
+        });
     }
-});
+    else if (elem.classList.contains(ContainerType.Grid)) {
+        type = ContainerType.Grid;
+        const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+        sketch.initBoxes();
+        sketchGrid = sketch;
+        addRowGrid === null || addRowGrid === void 0 ? void 0 : addRowGrid.addEventListener('click', () => {
+            sketch.addRow(1);
+        });
+        delRowGrid === null || delRowGrid === void 0 ? void 0 : delRowGrid.addEventListener('click', () => {
+            sketch.delRow(1);
+        });
+    }
+    else {
+        throw new Error('not found container type class name');
+    }
+}
 rangeInputs === null || rangeInputs === void 0 ? void 0 : rangeInputs.forEach((elem) => {
     var _a, _b;
     const rangeInput = elem;
     //(optionName)-(min/max)--range--(flex/grid)
     const idNames = rangeInput.id.split('-');
     const isMin = idNames[1] === 'min';
-    const isHue = idNames[0] === 'hue';
+    const optionName = idNames[0];
+    const sketch = idNames[idNames.length - 1] === 'flex' ? sketchFlex : sketchGrid;
     const searchClassName = (isMin)
         ? '.color-option__num.min'
         : '.color-option__num.max';
@@ -360,25 +368,22 @@ rangeInputs === null || rangeInputs === void 0 ? void 0 : rangeInputs.forEach((e
     if (!progressBar) {
         throw new Error('can not find .color-option__range__progress');
     }
+    if (!sketch) {
+        throw new Error('can not find corresponding sketch');
+    }
     rangeInput.addEventListener('input', () => {
-        rangeInput.value = validateInputValue(rangeInput, isMin, isHue).toString();
+        const new_value = validateInputValue(rangeInput, isMin, optionName === 'hue');
+        rangeInput.value = new_value.toString();
         numInput.value = rangeInput.value;
-        setProgressBar(numInput, progressBar, isMin, isHue);
-        // if(isMin) {
-        //     sketchFlex.updateBoxes({colorOptions:{hue: {min:validateInputValue(rangeInput, isMin, isHue) as hueRange['min'] ,max:sketchFlex.colorOptions.hue.max }, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
-        // }else {
-        //     sketchFlex.updateBoxes({colorOptions:{hue: {min: sketchFlex._colorOptions.hue.min, max:validateInputValue(rangeInput, isMin, isHue) as hueRange['min']}, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
-        // }
+        setProgressBar(numInput, progressBar, isMin, optionName === 'hue');
+        sketch.updateColorOptions(new_value, optionName, isMin);
     });
     numInput.addEventListener('change', () => {
-        numInput.value = validateInputValue(numInput, isMin, isHue).toString();
+        const new_value = validateInputValue(numInput, isMin, optionName === 'hue');
+        numInput.value = new_value.toString();
         rangeInput.value = numInput.value;
-        setProgressBar(numInput, progressBar, isMin, isHue);
-        // if(isMin) {
-        //     sketchFlex.updateBoxes({colorOptions:{hue: {min:validateInputValue(numInput, isMin, isHue) as hueRange['min'] ,max:sketchFlex.colorOptions.hue.max }, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
-        // }else {
-        //     sketchFlex.updateBoxes({colorOptions:{hue: {min: sketchFlex._colorOptions.hue.min, max:validateInputValue(numInput, isMin, isHue) as hueRange['max']}, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
-        // }
+        setProgressBar(numInput, progressBar, isMin, optionName === 'hue');
+        sketch.updateColorOptions(new_value, optionName, isMin);
     });
 });
 // min + value % max loop
