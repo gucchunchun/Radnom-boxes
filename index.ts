@@ -301,17 +301,17 @@ class Sketch {
     }
 }
 
-function setProgressBar(input: HTMLInputElement, progressBar: HTMLElement, min: boolean=false, hue: boolean=false) {
+function setProgressBar(input: HTMLInputElement, progressBar: HTMLElement, isMin: boolean=false, isHue: boolean=false) {
     let marginPercent:number;
     let marginPercentOpposite:number;
-    if(min){
-        marginPercent = (hue)
+    if(isMin){
+        marginPercent = (isHue)
                             ? parseInt(input.value)/360*100
                             : parseInt(input.value);
         marginPercentOpposite = parseInt(progressBar.style.marginRight.split('%')[0]);
         progressBar.style.marginLeft = marginPercent + '%';
     } else {
-        marginPercent = (hue)
+        marginPercent = (isHue)
                             ? (360 - parseInt(input.value))/360*100
                             : 100 - parseInt(input.value);
         marginPercentOpposite = parseInt(progressBar.style.marginLeft.split('%')[0]);
@@ -322,39 +322,26 @@ function setProgressBar(input: HTMLInputElement, progressBar: HTMLElement, min: 
     }
     progressBar.style.width = (100 - (marginPercent + marginPercentOpposite)) + '%';
 }
-function validateInputValue(input: HTMLInputElement, min: boolean=false, hue: boolean=false): number {
-    const inputOpposite = min
-                            ? input.parentElement?.querySelector('.max') as HTMLInputElement
-                            : input.parentElement?.querySelector('.min') as HTMLInputElement;
-    if(!inputOpposite) {
-        throw new Error(`can no find corresponding ${min?'max':'min'} element`);
-    }
-    const valueOpposite = parseInt(inputOpposite.value);
+function findOppositeInput(input: HTMLInputElement, isMin: boolean): HTMLInputElement {
+    const className = isMin ? '.max' : '.min';
+    const oppositeInput = input.parentElement?.querySelector(className) as HTMLInputElement;
 
-    let newValue:number = parseInt(input.value)
-    if(min) {
-        if(isNaN(newValue)) {
-            newValue = 0;
-        }else {
-            if(newValue < 0) {
-                newValue = 0;
-            }else if(valueOpposite < newValue) {
-                newValue = valueOpposite;
-            }
-        }
-    }else {
-        const maxValue =  hue? 360: 100;
-        if(isNaN(newValue)) {
-            newValue = maxValue;
-        }else {
-            if(maxValue < newValue) {
-                newValue = maxValue;
-            }else if(newValue < valueOpposite) {
-                newValue = valueOpposite;
-            }
-        }
+    if (!oppositeInput) {
+        throw new Error(`Cannot find corresponding ${isMin ? 'max' : 'min'} element`);
     }
-    return newValue;
+
+    return oppositeInput;
+}
+function validateInputValue(input: HTMLInputElement, isMin: boolean=false, isHue: boolean=false): number {
+    const oppositeInput = findOppositeInput(input, isMin);
+    const newValue:number = parseInt(input.value);
+    const maxValue:number = isHue? 360: 100;
+
+    if(isMin) {
+        return Math.max(0, Math.min(newValue, parseInt(oppositeInput.value)));
+    }else {
+        return Math.min(maxValue, Math.max(newValue, parseInt(oppositeInput.value)));
+    }
 }
 function setColorOption() {
     //get value from input
