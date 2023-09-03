@@ -238,6 +238,67 @@ class Sketch {
         this._boxes = new_boxes;
     }
 }
+function setProgressBar(input, progressBar, min = false, hue = false) {
+    let marginPercent;
+    let marginPercentOpposite;
+    if (min) {
+        marginPercent = (hue)
+            ? parseInt(input.value) / 360 * 100
+            : parseInt(input.value);
+        marginPercentOpposite = parseInt(progressBar.style.marginRight.split('%')[0]);
+        progressBar.style.marginLeft = marginPercent + '%';
+    }
+    else {
+        marginPercent = (hue)
+            ? (360 - parseInt(input.value)) / 360 * 100
+            : 100 - parseInt(input.value);
+        marginPercentOpposite = parseInt(progressBar.style.marginLeft.split('%')[0]);
+        progressBar.style.marginRight = marginPercent + '%';
+    }
+    if (isNaN(marginPercentOpposite)) {
+        marginPercentOpposite = 0;
+    }
+    progressBar.style.width = (100 - (marginPercent + marginPercentOpposite)) + '%';
+}
+function validateInputValue(input, min = false, hue = false) {
+    var _a, _b;
+    const inputOpposite = min
+        ? (_a = input.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector('.max')
+        : (_b = input.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.min');
+    if (!inputOpposite) {
+        throw new Error(`can no find corresponding ${min ? 'max' : 'min'} element`);
+    }
+    const valueOpposite = parseInt(inputOpposite.value);
+    let newValue = parseInt(input.value);
+    if (min) {
+        if (isNaN(newValue)) {
+            newValue = 0;
+        }
+        else {
+            if (newValue < 0) {
+                newValue = 0;
+            }
+            else if (valueOpposite < newValue) {
+                newValue = valueOpposite;
+            }
+        }
+    }
+    else {
+        const maxValue = hue ? 360 : 100;
+        if (isNaN(newValue)) {
+            newValue = maxValue;
+        }
+        else {
+            if (maxValue < newValue) {
+                newValue = maxValue;
+            }
+            else if (newValue < valueOpposite) {
+                newValue = valueOpposite;
+            }
+        }
+    }
+    return newValue;
+}
 function setColorOption() {
     //get value from input
     //set value depends on id name color-segment/container-type
@@ -291,58 +352,48 @@ rangeMin === null || rangeMin === void 0 ? void 0 : rangeMin.forEach((elem) => {
     var _a, _b;
     const rangeInput = elem;
     const numMin = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector('.num--min');
-    const progress = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
+    const progressBar = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
     if (!numMin) {
         throw new Error('can not find .num--min');
     }
-    if (!progress) {
+    if (!progressBar) {
         throw new Error('can not find .color-option__range__progress');
     }
     rangeInput.addEventListener('input', () => {
+        //(optionName)-(min/max)--(num/range)--(flex/grid)
+        // const idNames = input.id.split('-');
+        rangeInput.value = validateInputValue(rangeInput, true, true).toString();
         numMin.value = rangeInput.value;
-        let percent = parseInt(numMin.value);
-        if (numMin.id.split('-')[0] === 'hue') {
-            percent = percent / 360 * 100;
-        }
-        progress.style.marginLeft = percent + '%';
-        let marginRight = parseInt(progress.style.marginRight.split('%')[0]);
-        if (isNaN(marginRight)) {
-            marginRight = 0;
-        }
-        progress.style.width = (100 - marginRight - percent) + '%';
+        setProgressBar(numMin, progressBar, true, true);
     });
     numMin.addEventListener('change', () => {
+        //(optionName)-(min/max)--(num/range)--(flex/grid)
+        // const idNames = input.id.split('-');
+        numMin.value = validateInputValue(numMin, true, true).toString();
         rangeInput.value = numMin.value;
-        rangeInput.dispatchEvent(inputEvent);
+        setProgressBar(numMin, progressBar, true, true);
     });
 });
 rangeMax === null || rangeMax === void 0 ? void 0 : rangeMax.forEach((elem) => {
     var _a, _b;
     const rangeInput = elem;
     const numMax = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector('.num--max');
-    const progress = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
+    const progressBar = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
     if (!numMax) {
         throw new Error('can not find .num--max');
     }
-    if (!progress) {
+    if (!progressBar) {
         throw new Error('can not find .color-option__range__progress');
     }
     rangeInput.addEventListener('input', () => {
+        rangeInput.value = validateInputValue(rangeInput, false, true).toString();
         numMax.value = rangeInput.value;
-        let percent = 360 - parseInt(numMax.value);
-        if (numMax.id.split('-')[0] === 'hue') {
-            percent = percent / 360 * 100;
-        }
-        progress.style.marginRight = percent + '%';
-        let marginLeft = parseInt(progress.style.marginLeft.split('%')[0]);
-        if (isNaN(marginLeft)) {
-            marginLeft = 0;
-        }
-        progress.style.width = (100 - marginLeft - percent) + '%';
+        setProgressBar(numMax, progressBar, false, true);
     });
     numMax.addEventListener('change', () => {
+        numMax.value = validateInputValue(numMax, false, true).toString();
         rangeInput.value = numMax.value;
-        rangeInput.dispatchEvent(inputEvent);
+        setProgressBar(numMax, progressBar, false, true);
     });
 });
 // min + value % max loop
