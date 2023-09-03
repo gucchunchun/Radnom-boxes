@@ -1,55 +1,42 @@
-// NumericRange Utility
-type CreateArrayWithLengthX<
-	LENGTH extends number,
-	ACC extends unknown[] = [],
-> = ACC['length'] extends LENGTH
-	? ACC
-	: CreateArrayWithLengthX<LENGTH, [...ACC, 1]>
-
-// To define color saturation and luminance range
-type NumericRange<
-   START_ARR extends number[], 
-   END extends number, 
-   ACC extends number = never
-> = START_ARR['length'] extends END 
-   ? ACC | END
-   : NumericRange<[...START_ARR,1], END, ACC | START_ARR['length']>
-	
-
 //get random color: To coloring Boxes every time with different colors
-type hueRange = {
-    min: NumericRange<CreateArrayWithLengthX<0>, 360>,
-    max: NumericRange<CreateArrayWithLengthX<0>, 360>,
+enum ColorOption {
+    Hue = 'hue',
+    Saturation = 'saturation',
+    Luminance = 'luminance'
 }
-type colorRange = {
-    min: NumericRange<CreateArrayWithLengthX<0>, 100>,
-    max: NumericRange<CreateArrayWithLengthX<0>, 100>,
+type ColorRange = {
+    min: number,
+    max: number
 }
 type ColorOptions = {
-    hue: hueRange,
-    saturation: colorRange,
-    luminance: colorRange
+    [ColorOption.Hue]: ColorRange;
+    [ColorOption.Saturation]: ColorRange;
+    [ColorOption.Luminance]: ColorRange;
 }
-type HSLColor =  {
-    hue:  NumericRange<CreateArrayWithLengthX<0>, 360>,
-    saturation:  NumericRange<CreateArrayWithLengthX<0>, 100>,
-    luminance:  NumericRange<CreateArrayWithLengthX<0>, 100>,
+type Color =  {
+    [ColorOption.Hue]: number;
+    [ColorOption.Saturation]: number;
+    [ColorOption.Luminance]: number;
 }
-function getRandomHue(option: ColorOptions['hue']): HSLColor['hue'] {
-    return Math.round(Math.random() * (option.max - option.min) + option.min) as HSLColor['hue'];
+function getRandomHue(option: ColorOptions[ColorOption.Hue]): Color[ColorOption.Hue] {
+    return Math.round(Math.random() * (option.max - option.min) + option.min);
 }
-function getRandomSaturation(option:ColorOptions['saturation']): HSLColor['saturation'] {
-    return Math.round(Math.random() * (option.max - option.min) + option.min) as HSLColor['saturation'];
+function getRandomSaturation(option: ColorOptions[ColorOption.Saturation]): Color[ColorOption.Saturation] {
+    return Math.round(Math.random() * (option.max - option.min) + option.min);
 }
-function getRandomLuminance(option:ColorOptions['luminance']): HSLColor['luminance']{
-    return Math.round(Math.random() * (option.max - option.min) + option.min) as HSLColor['luminance'];
+function getRandomLuminance(option: ColorOptions[ColorOption.Luminance]): Color[ColorOption.Luminance]{
+    return Math.round(Math.random() * (option.max - option.min) + option.min);
 }
-function getRandomColor(option:ColorOptions): HSLColor {
-    const hue = getRandomHue(option['hue']);
-    const saturation = getRandomSaturation(option['saturation']);
-    const luminance = getRandomLuminance(option['luminance']);
-    return {hue: hue, saturation:saturation, luminance:luminance}
-}   
+function getRandomColor(option:ColorOptions): Color {
+    const hue = getRandomHue(option[ColorOption.Hue]);
+    const saturation = getRandomSaturation(option[ColorOption.Saturation]);
+    const luminance = getRandomLuminance(option[ColorOption.Luminance]);
+    return {
+        [ColorOption.Hue]: hue,
+        [ColorOption.Saturation]: saturation,
+        [ColorOption.Luminance]: luminance,
+    };
+}
 
 const defaultColorOptions:ColorOptions = {
     hue:{
@@ -74,7 +61,7 @@ interface BoxFeature {
     sketch: HTMLElement
     width: number
     colorOptions:ColorOptions
-    color: HSLColor
+    color: Color
     classList:string[]
 }
 class Box {
@@ -85,7 +72,7 @@ class Box {
         private _sketch: HTMLElement,
         private _width: number = 100,
         private _colorOptions: ColorOptions = defaultColorOptions,
-        private _color: HSLColor = getRandomColor(_colorOptions),
+        private _color: Color = getRandomColor(_colorOptions),
         private _classList: string[] = []
     ) {}
 
@@ -203,8 +190,8 @@ class Sketch {
         }  
     }
     
-    updateBoxes(updateFeature:Partial<Omit<BoxFeature, 'id'|'sketch'|'width'>>, ...positions:BoxPosition[]) {
-        if(positions) {
+    updateBoxes(updateFeature:Partial<Omit<BoxFeature, 'sketch'|'width'>>, ...positions:BoxPosition[]) {
+        if(0 < positions.length) {
             for(let i = 0; i < positions.length; i++) {
                 const row = positions[i].row;
                 const col = positions[i].col;
@@ -216,6 +203,9 @@ class Sketch {
                 }
             }
         }else {
+            if(updateFeature.colorOptions) {
+                this._colorOptions = updateFeature.colorOptions;
+            }
             for(let i = 0; i < this._boxes.length; i++) {
                 for(let j = 0; j < this._boxes[i].length; j++){
                     this._boxes[i][j].update(updateFeature);
@@ -223,6 +213,10 @@ class Sketch {
                 
             }
         }
+    }
+    updateColorOptions(value: number, optionName:string, isMin: boolean=false) {
+        let newColorOptions = this._colorOptions;
+        // newColorOptions[optionName]
     }
 
     addRow(addingNumber: number) {
@@ -343,10 +337,6 @@ function validateInputValue(input: HTMLInputElement, isMin: boolean=false, isHue
         return Math.min(maxValue, Math.max(newValue, parseInt(oppositeInput.value)));
     }
 }
-function setColorOption() {
-    //get value from input
-    //set value depends on id name color-segment/container-type
-}
 
 
 const sketches = document.querySelectorAll('.sketch');
@@ -354,9 +344,7 @@ const addRowFlex = document.querySelector('#add-row--flex');
 const delRowFlex = document.querySelector('#del-row--flex');
 const addRowGrid = document.querySelector('#add-row--grid');
 const delRowGrid = document.querySelector('#del-row--grid');
-const rangeMin = document.querySelectorAll('.range--min');
-const rangeMax = document.querySelectorAll('.range--max');
-
+const rangeInputs = document.querySelectorAll('.color-option__range');
 const colorOptionSetButton = document.querySelectorAll('.color-option__set');
 
 const BOX_NUMBER_IN_ROW = 6;
@@ -395,53 +383,45 @@ window.addEventListener('load', () => {
         }
     }
 });
-rangeMin?.forEach((elem)=> {
+rangeInputs?.forEach((elem)=> {
     const rangeInput = elem as HTMLInputElement;
-    const numMin = rangeInput.closest('.color-option--ctr')?.querySelector('.num--min') as HTMLInputElement;    
+    
+    //(optionName)-(min/max)--range--(flex/grid)
+    const idNames = rangeInput.id.split('-');
+    const isMin = idNames[1] === 'min';
+    const isHue = idNames[0] === 'hue';
+    const searchClassName = (isMin)
+                                ? '.color-option__num.min'
+                                : '.color-option__num.max';
+    const numInput = rangeInput.closest('.color-option--ctr')?.querySelector(searchClassName) as HTMLInputElement;    
     const progressBar = rangeInput.parentElement?.querySelector('.color-option__range__progress') as HTMLElement;
-    if(!numMin) {
+    if(!numInput) {
         throw new Error('can not find .num--min');
     }
     if(!progressBar) {
         throw new Error('can not find .color-option__range__progress');
     }
     rangeInput.addEventListener('input', () =>{
-        //(optionName)-(min/max)--(num/range)--(flex/grid)
-        // const idNames = input.id.split('-');
-        rangeInput.value = validateInputValue(rangeInput, true, true).toString();
-        numMin.value = rangeInput.value
-        setProgressBar(numMin, progressBar, true, true);
+        rangeInput.value = validateInputValue(rangeInput, isMin, isHue).toString();
+        numInput.value = rangeInput.value
+        setProgressBar(numInput, progressBar, isMin, isHue);
+        // if(isMin) {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min:validateInputValue(rangeInput, isMin, isHue) as hueRange['min'] ,max:sketchFlex.colorOptions.hue.max }, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }else {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min: sketchFlex._colorOptions.hue.min, max:validateInputValue(rangeInput, isMin, isHue) as hueRange['min']}, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }
     });
-    numMin.addEventListener('change', () =>{
-        //(optionName)-(min/max)--(num/range)--(flex/grid)
-        // const idNames = input.id.split('-');
-        numMin.value = validateInputValue(numMin, true, true).toString();
-        rangeInput.value = numMin.value;
-        setProgressBar(numMin, progressBar, true, true);
-    });
-});
-rangeMax?.forEach((elem)=> {
-    const rangeInput = elem as HTMLInputElement;
-    const numMax = rangeInput.closest('.color-option--ctr')?.querySelector('.num--max') as HTMLInputElement;    
-    const progressBar = rangeInput.parentElement?.querySelector('.color-option__range__progress') as HTMLElement;
-    if(!numMax) {
-        throw new Error('can not find .num--max');
-    }
-    if(!progressBar) {
-        throw new Error('can not find .color-option__range__progress');
-    }
-    rangeInput.addEventListener('input', () =>{
-        rangeInput.value = validateInputValue(rangeInput, false, true).toString();
-        numMax.value = rangeInput.value;
-        setProgressBar(numMax, progressBar, false, true);
-    });
-    numMax.addEventListener('change', () =>{
-        numMax.value = validateInputValue(numMax, false, true).toString();
-        rangeInput.value = numMax.value;
-        setProgressBar(numMax, progressBar, false, true);
+    numInput.addEventListener('change', () =>{
+        numInput.value = validateInputValue(numInput, isMin, isHue).toString();
+        rangeInput.value = numInput.value;
+        setProgressBar(numInput, progressBar, isMin, isHue);
+        // if(isMin) {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min:validateInputValue(numInput, isMin, isHue) as hueRange['min'] ,max:sketchFlex.colorOptions.hue.max }, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }else {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min: sketchFlex._colorOptions.hue.min, max:validateInputValue(numInput, isMin, isHue) as hueRange['max']}, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }
     });
 });
-
 
 
 // min + value % max loop

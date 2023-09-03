@@ -1,4 +1,11 @@
 "use strict";
+//get random color: To coloring Boxes every time with different colors
+var ColorOption;
+(function (ColorOption) {
+    ColorOption["Hue"] = "hue";
+    ColorOption["Saturation"] = "saturation";
+    ColorOption["Luminance"] = "luminance";
+})(ColorOption || (ColorOption = {}));
 function getRandomHue(option) {
     return Math.round(Math.random() * (option.max - option.min) + option.min);
 }
@@ -9,10 +16,14 @@ function getRandomLuminance(option) {
     return Math.round(Math.random() * (option.max - option.min) + option.min);
 }
 function getRandomColor(option) {
-    const hue = getRandomHue(option['hue']);
-    const saturation = getRandomSaturation(option['saturation']);
-    const luminance = getRandomLuminance(option['luminance']);
-    return { hue: hue, saturation: saturation, luminance: luminance };
+    const hue = getRandomHue(option[ColorOption.Hue]);
+    const saturation = getRandomSaturation(option[ColorOption.Saturation]);
+    const luminance = getRandomLuminance(option[ColorOption.Luminance]);
+    return {
+        [ColorOption.Hue]: hue,
+        [ColorOption.Saturation]: saturation,
+        [ColorOption.Luminance]: luminance,
+    };
 }
 const defaultColorOptions = {
     hue: {
@@ -144,7 +155,7 @@ class Sketch {
         }
     }
     updateBoxes(updateFeature, ...positions) {
-        if (positions) {
+        if (0 < positions.length) {
             for (let i = 0; i < positions.length; i++) {
                 const row = positions[i].row;
                 const col = positions[i].col;
@@ -158,12 +169,19 @@ class Sketch {
             }
         }
         else {
+            if (updateFeature.colorOptions) {
+                this._colorOptions = updateFeature.colorOptions;
+            }
             for (let i = 0; i < this._boxes.length; i++) {
                 for (let j = 0; j < this._boxes[i].length; j++) {
                     this._boxes[i][j].update(updateFeature);
                 }
             }
         }
+    }
+    updateColorOptions(value, optionName, isMin = false) {
+        let newColorOptions = this._colorOptions;
+        // newColorOptions[optionName]
     }
     addRow(addingNumber) {
         if (addingNumber <= 0) {
@@ -280,17 +298,12 @@ function validateInputValue(input, isMin = false, isHue = false) {
         return Math.min(maxValue, Math.max(newValue, parseInt(oppositeInput.value)));
     }
 }
-function setColorOption() {
-    //get value from input
-    //set value depends on id name color-segment/container-type
-}
 const sketches = document.querySelectorAll('.sketch');
 const addRowFlex = document.querySelector('#add-row--flex');
 const delRowFlex = document.querySelector('#del-row--flex');
 const addRowGrid = document.querySelector('#add-row--grid');
 const delRowGrid = document.querySelector('#del-row--grid');
-const rangeMin = document.querySelectorAll('.range--min');
-const rangeMax = document.querySelectorAll('.range--max');
+const rangeInputs = document.querySelectorAll('.color-option__range');
 const colorOptionSetButton = document.querySelectorAll('.color-option__set');
 const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
@@ -329,52 +342,44 @@ window.addEventListener('load', () => {
         }
     }
 });
-rangeMin === null || rangeMin === void 0 ? void 0 : rangeMin.forEach((elem) => {
+rangeInputs === null || rangeInputs === void 0 ? void 0 : rangeInputs.forEach((elem) => {
     var _a, _b;
     const rangeInput = elem;
-    const numMin = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector('.num--min');
+    //(optionName)-(min/max)--range--(flex/grid)
+    const idNames = rangeInput.id.split('-');
+    const isMin = idNames[1] === 'min';
+    const isHue = idNames[0] === 'hue';
+    const searchClassName = (isMin)
+        ? '.color-option__num.min'
+        : '.color-option__num.max';
+    const numInput = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector(searchClassName);
     const progressBar = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
-    if (!numMin) {
+    if (!numInput) {
         throw new Error('can not find .num--min');
     }
     if (!progressBar) {
         throw new Error('can not find .color-option__range__progress');
     }
     rangeInput.addEventListener('input', () => {
-        //(optionName)-(min/max)--(num/range)--(flex/grid)
-        // const idNames = input.id.split('-');
-        rangeInput.value = validateInputValue(rangeInput, true, true).toString();
-        numMin.value = rangeInput.value;
-        setProgressBar(numMin, progressBar, true, true);
+        rangeInput.value = validateInputValue(rangeInput, isMin, isHue).toString();
+        numInput.value = rangeInput.value;
+        setProgressBar(numInput, progressBar, isMin, isHue);
+        // if(isMin) {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min:validateInputValue(rangeInput, isMin, isHue) as hueRange['min'] ,max:sketchFlex.colorOptions.hue.max }, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }else {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min: sketchFlex._colorOptions.hue.min, max:validateInputValue(rangeInput, isMin, isHue) as hueRange['min']}, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }
     });
-    numMin.addEventListener('change', () => {
-        //(optionName)-(min/max)--(num/range)--(flex/grid)
-        // const idNames = input.id.split('-');
-        numMin.value = validateInputValue(numMin, true, true).toString();
-        rangeInput.value = numMin.value;
-        setProgressBar(numMin, progressBar, true, true);
-    });
-});
-rangeMax === null || rangeMax === void 0 ? void 0 : rangeMax.forEach((elem) => {
-    var _a, _b;
-    const rangeInput = elem;
-    const numMax = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector('.num--max');
-    const progressBar = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
-    if (!numMax) {
-        throw new Error('can not find .num--max');
-    }
-    if (!progressBar) {
-        throw new Error('can not find .color-option__range__progress');
-    }
-    rangeInput.addEventListener('input', () => {
-        rangeInput.value = validateInputValue(rangeInput, false, true).toString();
-        numMax.value = rangeInput.value;
-        setProgressBar(numMax, progressBar, false, true);
-    });
-    numMax.addEventListener('change', () => {
-        numMax.value = validateInputValue(numMax, false, true).toString();
-        rangeInput.value = numMax.value;
-        setProgressBar(numMax, progressBar, false, true);
+    numInput.addEventListener('change', () => {
+        numInput.value = validateInputValue(numInput, isMin, isHue).toString();
+        rangeInput.value = numInput.value;
+        setProgressBar(numInput, progressBar, isMin, isHue);
+        // if(isMin) {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min:validateInputValue(numInput, isMin, isHue) as hueRange['min'] ,max:sketchFlex.colorOptions.hue.max }, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }else {
+        //     sketchFlex.updateBoxes({colorOptions:{hue: {min: sketchFlex._colorOptions.hue.min, max:validateInputValue(numInput, isMin, isHue) as hueRange['max']}, saturation: sketchFlex.colorOptions.saturation, luminance:sketchFlex.colorOptions.luminance}})
+        // }
     });
 });
 // min + value % max loop
+//# sourceMappingURL=index.js.map
