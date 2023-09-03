@@ -348,10 +348,7 @@ function validateInputValue(input: HTMLInputElement, isMin: boolean=false, isHue
 
 
 const sketches = document.querySelectorAll('.sketch');
-const addRowFlex = document.querySelector('#add-row--flex');
-const delRowFlex = document.querySelector('#del-row--flex');
-const addRowGrid = document.querySelector('#add-row--grid');
-const delRowGrid = document.querySelector('#del-row--grid');
+const rowManipButtons = document.querySelectorAll('.button--row-manip');
 const rangeInputs = document.querySelectorAll('.color-option__range');
 const colorOptionSetButton = document.querySelectorAll('.color-option__set');
 
@@ -368,30 +365,49 @@ for(let i=0; i < sketches.length; i++) {
         const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
         sketch.initBoxes();
         sketchFlex = sketch;
-        addRowFlex?.addEventListener('click', () =>{
-            sketch.addRow(1);
-        });
-        delRowFlex?.addEventListener('click', () =>{
-            sketch.delRow(1);
-        });
     } else if(elem.classList.contains(ContainerType.Grid)) {
         type = ContainerType.Grid;
             const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
         sketch.initBoxes();
         sketchGrid = sketch;
-        addRowGrid?.addEventListener('click', () =>{
-            sketch.addRow(1);
-        });
-        delRowGrid?.addEventListener('click', () =>{
-            sketch.delRow(1);
-        });
     } else {
         throw new Error('not found container type class name');
     }
 }
 
-rangeInputs?.forEach((elem)=> {
-    const rangeInput = elem as HTMLInputElement;
+rowManipButtons.forEach((button)=>{
+    const rowManipButton = button as HTMLButtonElement;
+    //row-(add/del)--(flex/grid)
+    const idNames = rowManipButton.id.split('-');
+    const isAdd = idNames[1] == 'add';
+    const containerType = idNames[idNames.length-1];
+    const sketch = containerType === 'flex' ? sketchFlex : sketchGrid;
+    const delButton = isAdd
+                        ? rowManipButton.parentElement?.querySelector(`#row-del--${containerType}`)
+                        : rowManipButton;
+    if(!delButton) {
+        throw new Error(`delete row button for ${containerType} not found`);
+    }
+    rowManipButton.addEventListener('click', () =>{
+        if(isAdd) {
+            sketch.addRow(1);
+            if(sketch.getBoxNumber()===1) {
+                delButton.classList.remove('disabled');
+            }
+        }else {
+            if(sketch.getBoxNumber()===0) {
+                return;
+            }
+            sketch.delRow(1);
+            if(sketch.getBoxNumber()===0) {
+                delButton.classList.add('disabled');
+            }
+        }
+    });
+});
+
+rangeInputs.forEach((input)=> {
+    const rangeInput = input as HTMLInputElement;
     
     //(optionName)-(min/max)--range--(flex/grid)
     const idNames = rangeInput.id.split('-');
@@ -401,7 +417,7 @@ rangeInputs?.forEach((elem)=> {
     const searchClassName = (isMin)
                                 ? '.color-option__num.min'
                                 : '.color-option__num.max';
-    const numInput = rangeInput.closest('.color-option--ctr')?.querySelector(searchClassName) as HTMLInputElement;    
+    const numInput = rangeInput.closest('.color-option__ctr')?.querySelector(searchClassName) as HTMLInputElement;    
     const progressBar = rangeInput.parentElement?.querySelector('.color-option__range__progress') as HTMLElement;
     if(!numInput) {
         throw new Error('can not find .num--min');
@@ -425,6 +441,7 @@ rangeInputs?.forEach((elem)=> {
         rangeInput.value = numInput.value;
         setProgressBar(numInput, progressBar, isMin, optionName === 'hue');
         sketch.updateColorOptions(new_value, optionName, isMin);
+
     });
 });
 

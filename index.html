@@ -12,78 +12,187 @@
       <h2>flex</h2>
       <div class="sketch sketch--flex"></div>
       <div class="sketch__setting-ctr">
-        <button id="add-row--flex" class="setting__button" type="button">
+        <button
+          id="row-add--flex"
+          class="setting__button button--row-manip"
+          type="button"
+        >
           add
         </button>
-        <button id="del-row--flex" class="setting__button" type="button">
+        <button
+          id="row-del--flex"
+          class="setting__button button--row-manip"
+          type="button"
+        >
           delete
         </button>
-        <div class="color-option--ctr">
-          <p class="color-option__title">hue range</p>
-          <div class="color-option__field field--num">
-            <label for="hue-min--num--flex" class="color-option__label"
-              >min</label
-            >
-            <input
-              id="hue-min--num--flex"
-              class="color-option__num min"
-              type="number"
-              value="0"
-              min="0"
-              max="360"
-            />
-            <span class="input__separator">-</span>
-            <label for="hue-max--num--flex" class="color-option__label"
-              >max</label
-            >
-            <input
-              id="hue-max--num--flex"
-              class="color-option__num max"
-              type="number"
-              value="360"
-              min="0"
-              max="360"
-            />
+        <section class="color-option">
+          <div class="color-option__ctr">
+            <p class="color-option__title">hue</p>
+            <div class="color-option__field field--num">
+              <label for="hue-min--num--flex" class="color-option__label"
+                >min</label
+              >
+              <input
+                id="hue-min--num--flex"
+                class="color-option__num min"
+                type="number"
+                value="0"
+                min="0"
+                max="360"
+              />
+              <span class="input__separator">-</span>
+              <label for="hue-max--num--flex" class="color-option__label"
+                >max</label
+              >
+              <input
+                id="hue-max--num--flex"
+                class="color-option__num max"
+                type="number"
+                value="360"
+                min="0"
+                max="360"
+              />
+            </div>
+            <div class="color-option__field field--range">
+              <input
+                id="hue-min--range--flex"
+                class="color-option__range min"
+                type="range"
+                value="0"
+                min="0"
+                max="360"
+                step="1"
+              />
+              <input
+                id="hue-max--range--flex"
+                class="color-option__range max"
+                type="range"
+                value="360"
+                min="0"
+                max="360"
+                step="1"
+              />
+              <span class="color-option__range__progress"></span>
+            </div>
           </div>
-          <div class="color-option__field field--range">
-            <input
-              id="hue-min--range--flex"
-              class="color-option__range min"
-              type="range"
-              value="0"
-              min="0"
-              max="360"
-              step="1"
-            />
-            <input
-              id="hue-max--range--flex"
-              class="color-option__range max"
-              type="range"
-              value="360"
-              min="0"
-              max="360"
-              step="1"
-            />
-            <span class="color-option__range__progress"></span>
+          <div class="color-option__ctr">
+            <p class="color-option__title">saturation</p>
+            <div class="color-option__field field--num">
+              <label for="saturation-min--num--flex" class="color-option__label"
+                >min</label
+              >
+              <input
+                id="saturation-min--num--flex"
+                class="color-option__num min"
+                type="number"
+                value="0"
+                min="0"
+                max="100"
+              />
+              <span class="input__separator">-</span>
+              <label for="saturation-max--num--flex" class="color-option__label"
+                >max</label
+              >
+              <input
+                id="saturation-max--num--flex"
+                class="color-option__num max"
+                type="number"
+                value="100"
+                min="0"
+                max="100"
+              />
+            </div>
+            <div class="color-option__field field--range">
+              <input
+                id="saturation-min--range--flex"
+                class="color-option__range min"
+                type="range"
+                value="0"
+                min="0"
+                max="100"
+                step="1"
+              />
+              <input
+                id="saturation-max--range--flex"
+                class="color-option__range max"
+                type="range"
+                value="100"
+                min="0"
+                max="100"
+                step="1"
+              />
+              <span class="color-option__range__progress"></span>
+            </div>
           </div>
-          <button
-            id="hue--flex"
-            class="setting__button color-option__set"
-            type="button"
-          >
-            set
-          </button>
-        </div>
+          <div class="color-option__ctr">
+            <p class="color-option__title">luminance</p>
+            <div class="color-option__field field--num">
+              <label for="luminance-min--num--flex" class="color-option__label"
+                >min</label
+              >
+              <input
+                id="luminance-min--num--flex"
+                class="color-option__num min"
+                type="number"
+                value="0"
+                min="0"
+                max="100"
+              />
+              <span class="input__separator">-</span>
+              <label for="luminance-max--num--flex" class="color-option__label"
+                >max</label
+              >
+              <input
+                id="luminance-max--num--flex"
+                class="color-option__num max"
+                type="number"
+                value="100"
+                min="0"
+                max="100"
+              />
+            </div>
+            <div class="color-option__field field--range">
+              <input
+                id="luminance-min--range--flex"
+                class="color-option__range min"
+                type="range"
+                value="0"
+                min="0"
+                max="100"
+                step="1"
+              />
+              <input
+                id="luminance-max--range--flex"
+                class="color-option__range max"
+                type="range"
+                value="100"
+                min="0"
+                max="100"
+                step="1"
+              />
+              <span class="color-option__range__progress"></span>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
     <div class="sketch--ctr">
       <h2>grid</h2>
       <div class="sketch sketch--grid"></div>
       <div class="sketch__setting-ctr">
-        <button id="add-row--grid" class="setting__button" type="button">
+        <button
+          id="row-add--grid"
+          class="setting__button button--row-manip"
+          type="button"
+        >
           add
         </button>
-        <button id="del-row--grid" class="setting__button" type="button">
+        <button
+          id="row-del--grid"
+          class="setting__button button--row-manip"
+          type="button"
+        >
           delete
         </button>
       </div>
