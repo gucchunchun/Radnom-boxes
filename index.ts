@@ -301,11 +301,22 @@ class Sketch {
     }
 }
 
+function setColorOption() {
+    //get value from input
+    //set value depends on id name color-segment/container-type
+}
+
+
 const sketches = document.querySelectorAll('.sketch');
 const addRowFlex = document.querySelector('#add-row--flex');
 const delRowFlex = document.querySelector('#del-row--flex');
 const addRowGrid = document.querySelector('#add-row--grid');
 const delRowGrid = document.querySelector('#del-row--grid');
+const rangeMin = document.querySelectorAll('.range--min');
+const rangeMax = document.querySelectorAll('.range--max');
+
+const colorOptionSetButton = document.querySelectorAll('.color-option__set');
+
 const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex: Sketch;
 let sketchGrid: Sketch;
@@ -341,7 +352,54 @@ window.addEventListener('load', () => {
         }
     }
 });
-
+rangeMin?.forEach((elem)=> {
+    const rangeInput = elem as HTMLInputElement;
+    const numMin = rangeInput.closest('.color-option--ctr')?.querySelector('.num--min') as HTMLInputElement;    
+    const progress = rangeInput.parentElement?.querySelector('.color-option__range__progress') as HTMLElement;
+    if(!numMin) {
+        throw new Error('can not find .num--min');
+    }
+    if(!progress) {
+        throw new Error('can not find .color-option__range__progress');
+    }
+    rangeInput.addEventListener('input', () =>{
+        numMin.value = rangeInput.value;
+        let percent = parseInt(numMin.value);
+        if(numMin.id.split('-')[0] === 'hue'){
+            percent = percent / 360 * 100;
+        }
+        progress.style.marginLeft = percent + '%';
+        let marginRight = parseInt(progress.style.marginRight.split('%')[0]);
+        if(isNaN(marginRight)) {
+            marginRight = 0
+        }
+        progress.style.width = (100 - marginRight - percent) + '%';
+    });
+});
+rangeMax?.forEach((elem)=> {
+    const rangeInput = elem as HTMLInputElement;
+    const numMax = rangeInput.closest('.color-option--ctr')?.querySelector('.num--max') as HTMLInputElement;    
+    const progress = rangeInput.parentElement?.querySelector('.color-option__range__progress') as HTMLElement;
+    if(!numMax) {
+        throw new Error('can not find .num--max');
+    }
+    if(!progress) {
+        throw new Error('can not find .color-option__range__progress');
+    }
+    rangeInput.addEventListener('input', () =>{
+        numMax.value = rangeInput.value;
+        let percent = 360 - parseInt(numMax.value);
+        if(numMax.id.split('-')[0] === 'hue'){
+            percent = percent / 360 * 100;
+        }
+        progress.style.marginRight = percent + '%';
+        let marginLeft = parseInt(progress.style.marginLeft.split('%')[0]);
+        if(isNaN(marginLeft)) {
+            marginLeft = 0
+        }
+        progress.style.width = (100 - marginLeft - percent) + '%';
+    });
+});
 
 
 

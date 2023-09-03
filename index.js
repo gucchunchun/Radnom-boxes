@@ -238,11 +238,18 @@ class Sketch {
         this._boxes = new_boxes;
     }
 }
+function setColorOption() {
+    //get value from input
+    //set value depends on id name color-segment/container-type
+}
 const sketches = document.querySelectorAll('.sketch');
 const addRowFlex = document.querySelector('#add-row--flex');
 const delRowFlex = document.querySelector('#del-row--flex');
 const addRowGrid = document.querySelector('#add-row--grid');
 const delRowGrid = document.querySelector('#del-row--grid');
+const rangeMin = document.querySelectorAll('.range--min');
+const rangeMax = document.querySelectorAll('.range--max');
+const colorOptionSetButton = document.querySelectorAll('.color-option__set');
 const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
 let sketchGrid;
@@ -278,5 +285,55 @@ window.addEventListener('load', () => {
             throw new Error('not found container type class name');
         }
     }
+});
+rangeMin === null || rangeMin === void 0 ? void 0 : rangeMin.forEach((elem) => {
+    var _a, _b;
+    const rangeInput = elem;
+    const numMin = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector('.num--min');
+    const progress = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
+    if (!numMin) {
+        throw new Error('can not find .num--min');
+    }
+    if (!progress) {
+        throw new Error('can not find .color-option__range__progress');
+    }
+    rangeInput.addEventListener('input', () => {
+        numMin.value = rangeInput.value;
+        let percent = parseInt(numMin.value);
+        if (numMin.id.split('-')[0] === 'hue') {
+            percent = percent / 360 * 100;
+        }
+        progress.style.marginLeft = percent + '%';
+        let marginRight = parseInt(progress.style.marginRight.split('%')[0]);
+        if (isNaN(marginRight)) {
+            marginRight = 0;
+        }
+        progress.style.width = (100 - marginRight - percent) + '%';
+    });
+});
+rangeMax === null || rangeMax === void 0 ? void 0 : rangeMax.forEach((elem) => {
+    var _a, _b;
+    const rangeInput = elem;
+    const numMax = (_a = rangeInput.closest('.color-option--ctr')) === null || _a === void 0 ? void 0 : _a.querySelector('.num--max');
+    const progress = (_b = rangeInput.parentElement) === null || _b === void 0 ? void 0 : _b.querySelector('.color-option__range__progress');
+    if (!numMax) {
+        throw new Error('can not find .num--max');
+    }
+    if (!progress) {
+        throw new Error('can not find .color-option__range__progress');
+    }
+    rangeInput.addEventListener('input', () => {
+        numMax.value = rangeInput.value;
+        let percent = 360 - parseInt(numMax.value);
+        if (numMax.id.split('-')[0] === 'hue') {
+            percent = percent / 360 * 100;
+        }
+        progress.style.marginRight = percent + '%';
+        let marginLeft = parseInt(progress.style.marginLeft.split('%')[0]);
+        if (isNaN(marginLeft)) {
+            marginLeft = 0;
+        }
+        progress.style.width = (100 - marginLeft - percent) + '%';
+    });
 });
 // min + value % max loop

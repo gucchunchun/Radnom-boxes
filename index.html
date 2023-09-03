@@ -26,7 +26,7 @@
             >
             <input
               id="hue-min__num--flex"
-              class="color-option__num"
+              class="color-option__num num--min"
               type="number"
               value="0"
               min="0"
@@ -38,7 +38,7 @@
             >
             <input
               id="hue-max__num--flex"
-              class="color-option__num"
+              class="color-option__num num--max"
               type="number"
               value="360"
               min="0"
@@ -47,16 +47,18 @@
           </div>
           <div class="color-option__field field--range">
             <input
+              id="hue-min__range--flex"
+              class="color-option__range range--min"
               type="range"
-              class="color-option__range range--max"
               value="0"
               min="0"
               max="360"
               step="1"
             />
             <input
+              id="hue-max__range--flex"
+              class="color-option__range range--max"
               type="range"
-              class="color-option__range range--min"
               value="360"
               min="0"
               max="360"
@@ -64,6 +66,13 @@
             />
             <span class="color-option__range__progress"></span>
           </div>
+          <button
+            id="hue--flex"
+            class="setting__button color-option__set"
+            type="button"
+          >
+            set
+          </button>
         </div>
       </div>
     </div>
