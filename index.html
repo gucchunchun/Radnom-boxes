@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Etch-a-Sketch</h1>
+    <h1 class="title">Etch-a-Sketch</h1>
     <div class="sketch--ctr">
       <h2>flex</h2>
       <div class="sketch sketch--flex"></div>
@@ -18,6 +18,53 @@
         <button id="del-row--flex" class="setting__button" type="button">
           delete
         </button>
+        <div class="color-option--ctr">
+          <p class="color-option__title">hue range</p>
+          <div class="color-option__field field--num">
+            <label for="hue-min__num--flex" class="color-option__label"
+              >min</label
+            >
+            <input
+              id="hue-min__num--flex"
+              class="color-option__num"
+              type="number"
+              value="0"
+              min="0"
+              max="360"
+            />
+            <span class="input__separator">-</span>
+            <label for="hue-max__num--flex" class="color-option__label"
+              >max</label
+            >
+            <input
+              id="hue-max__num--flex"
+              class="color-option__num"
+              type="number"
+              value="360"
+              min="0"
+              max="360"
+            />
+          </div>
+          <div class="color-option__field field--range">
+            <input
+              type="range"
+              class="color-option__range range--max"
+              value="0"
+              min="0"
+              max="360"
+              step="1"
+            />
+            <input
+              type="range"
+              class="color-option__range range--min"
+              value="360"
+              min="0"
+              max="360"
+              step="1"
+            />
+            <span class="color-option__range__progress"></span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="sketch--ctr">
