@@ -189,26 +189,6 @@ class Sketch {
             }
         }  
     }
-    //use less??
-    updateBoxes(updateFeature:Partial<Omit<BoxFeature, 'sketch'|'width'>>, ...positions:BoxPosition[]) {
-        if(0 < positions.length) {
-            for(let i = 0; i < positions.length; i++) {
-                const row = positions[i].row;
-                const col = positions[i].col;
-                const targetBox = this._boxes[row][col];
-                if(targetBox.position === positions[i]){
-                    targetBox.update(updateFeature);
-                }else {
-                    throw new Error(`can not find Box with position:${positions[i]}`)
-                }
-            }
-        }else {
-            if(updateFeature.colorOptions) {
-                this._colorOptions = updateFeature.colorOptions;
-            }
-            
-        }
-    }
 
     updateColorOptions(value: number, optionName:string, isMin: boolean=false) {
         let newColorOptions: ColorOptions = this._colorOptions;
@@ -343,16 +323,6 @@ function validateInputValue(input: HTMLInputElement, isMin: boolean=false, isHue
         return Math.max(0, Math.min(newValue, parseInt(oppositeInput.value)));
     }else {
         return Math.min(maxValue, Math.max(newValue, parseInt(oppositeInput.value)));
-    }
-}
-function calcShortestFlipPath(currentAngle:number, targetAngle:number) {
-    const difference = targetAngle - currentAngle;
-    if (Math.abs(difference) <= 180) {
-      return targetAngle;
-    } else if (difference > 0) {
-      return targetAngle - 360;
-    } else {
-      return targetAngle + 360;
     }
 }
 

@@ -154,27 +154,6 @@ class Sketch {
             }
         }
     }
-    //use less??
-    updateBoxes(updateFeature, ...positions) {
-        if (0 < positions.length) {
-            for (let i = 0; i < positions.length; i++) {
-                const row = positions[i].row;
-                const col = positions[i].col;
-                const targetBox = this._boxes[row][col];
-                if (targetBox.position === positions[i]) {
-                    targetBox.update(updateFeature);
-                }
-                else {
-                    throw new Error(`can not find Box with position:${positions[i]}`);
-                }
-            }
-        }
-        else {
-            if (updateFeature.colorOptions) {
-                this._colorOptions = updateFeature.colorOptions;
-            }
-        }
-    }
     updateColorOptions(value, optionName, isMin = false) {
         let newColorOptions = this._colorOptions;
         if (Object.values(ColorOption).includes(optionName)) {
@@ -305,18 +284,6 @@ function validateInputValue(input, isMin = false, isHue = false) {
     }
     else {
         return Math.min(maxValue, Math.max(newValue, parseInt(oppositeInput.value)));
-    }
-}
-function calcShortestFlipPath(currentAngle, targetAngle) {
-    const difference = targetAngle - currentAngle;
-    if (Math.abs(difference) <= 180) {
-        return targetAngle;
-    }
-    else if (difference > 0) {
-        return targetAngle - 360;
-    }
-    else {
-        return targetAngle + 360;
     }
 }
 const sketches = document.querySelectorAll('.sketch');

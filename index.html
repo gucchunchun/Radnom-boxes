@@ -214,6 +214,174 @@
         >
           delete
         </button>
+        <section class="color-option">
+          <button
+            class="setting__button button--flip-manip left"
+            type="button"
+          ></button>
+          <button
+            class="setting__button button--flip-manip right"
+            type="button"
+          ></button>
+          <div class="color-option__flip-box page1">
+            <div class="color-option__ctr flip-box__side page1">
+              <p class="color-option__title">hue</p>
+              <div class="color-option__field field--num">
+                <label for="hue-min--num--grid" class="color-option__label"
+                  >min</label
+                >
+                <input
+                  id="hue-min--num--gird"
+                  class="color-option__num min"
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="360"
+                />
+                <span class="input__separator">-</span>
+                <label for="hue-max--num--gird" class="color-option__label"
+                  >max</label
+                >
+                <input
+                  id="hue-max--num--gird"
+                  class="color-option__num max"
+                  type="number"
+                  value="360"
+                  min="0"
+                  max="360"
+                />
+              </div>
+              <div class="color-option__field field--range">
+                <input
+                  id="hue-min--range--gird"
+                  class="color-option__range min"
+                  type="range"
+                  value="0"
+                  min="0"
+                  max="360"
+                  step="1"
+                />
+                <input
+                  id="hue-max--range--gird"
+                  class="color-option__range max"
+                  type="range"
+                  value="360"
+                  min="0"
+                  max="360"
+                  step="1"
+                />
+                <span class="color-option__range__progress"></span>
+              </div>
+            </div>
+            <div class="color-option__ctr flip-box__side page2">
+              <p class="color-option__title">saturation</p>
+              <div class="color-option__field field--num">
+                <label
+                  for="saturation-min--num--gird"
+                  class="color-option__label"
+                  >min</label
+                >
+                <input
+                  id="saturation-min--num--gird"
+                  class="color-option__num min"
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="100"
+                />
+                <span class="input__separator">-</span>
+                <label
+                  for="saturation-max--num--gird"
+                  class="color-option__label"
+                  >max</label
+                >
+                <input
+                  id="saturation-max--num--gird"
+                  class="color-option__num max"
+                  type="number"
+                  value="100"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="color-option__field field--range">
+                <input
+                  id="saturation-min--range--gird"
+                  class="color-option__range min"
+                  type="range"
+                  value="0"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <input
+                  id="saturation-max--range--gird"
+                  class="color-option__range max"
+                  type="range"
+                  value="100"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <span class="color-option__range__progress"></span>
+              </div>
+            </div>
+            <div class="color-option__ctr flip-box__side page3">
+              <p class="color-option__title">luminance</p>
+              <div class="color-option__field field--num">
+                <label
+                  for="luminance-min--num--gird"
+                  class="color-option__label"
+                  >min</label
+                >
+                <input
+                  id="luminance-min--num--gird"
+                  class="color-option__num min"
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="100"
+                />
+                <span class="input__separator">-</span>
+                <label
+                  for="luminance-max--num--gird"
+                  class="color-option__label"
+                  >max</label
+                >
+                <input
+                  id="luminance-max--num--gird"
+                  class="color-option__num max"
+                  type="number"
+                  value="100"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="color-option__field field--range">
+                <input
+                  id="luminance-min--range--gird"
+                  class="color-option__range min"
+                  type="range"
+                  value="0"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <input
+                  id="luminance-max--range--gird"
+                  class="color-option__range max"
+                  type="range"
+                  value="100"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <span class="color-option__range__progress"></span>
+              </div>
+            </div>
+            <div class="color-option__ctr flip-box__side page4"></div>
+          </div>
+        </section>
       </div>
     </div>
     <script src="index.js"></script>
