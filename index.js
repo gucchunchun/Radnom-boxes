@@ -307,6 +307,18 @@ function validateInputValue(input, isMin = false, isHue = false) {
         return Math.min(maxValue, Math.max(newValue, parseInt(oppositeInput.value)));
     }
 }
+function calcShortestFlipPath(currentAngle, targetAngle) {
+    const difference = targetAngle - currentAngle;
+    if (Math.abs(difference) <= 180) {
+        return targetAngle;
+    }
+    else if (difference > 0) {
+        return targetAngle - 360;
+    }
+    else {
+        return targetAngle + 360;
+    }
+}
 const sketches = document.querySelectorAll('.sketch');
 const rowManipButtons = document.querySelectorAll('.button--row-manip');
 const rangeInputs = document.querySelectorAll('.color-option__range');
@@ -421,28 +433,21 @@ flipManipButtons.forEach((button) => {
     const flipManipButton = button;
     const isLeft = flipManipButton.classList.contains('left');
     const flipBox = (_a = flipManipButton.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector('.color-option__flip-box');
-    if (!flipBox) {
-        throw new Error(`${flipManipButton}'s corresponding flipBox can not be found`);
-    }
     flipManipButton.addEventListener('click', () => {
-        const flipBoxStyle = getComputedStyle(flipBox);
-        const transform = flipBoxStyle.transform;
-        const match = transform.match(/rotateY\(([^)]+)\)/);
-        let rotateYValue = match
-            ? isNaN(parseInt(match[1].replace('deg', '')))
+        const match = getComputedStyle(flipBox).getPropertyValue('--angle');
+        const currentAngle = match
+            ? isNaN(parseInt(match))
                 ? 0
-                : parseInt(match[1].replace('deg', ''))
+                : parseInt(match.replace('deg', ''))
             : 0;
+        let targetAngle;
         if (isLeft) {
-            rotateYValue += 90;
+            targetAngle = currentAngle + 90;
         }
         else {
-            rotateYValue -= 90;
+            targetAngle = currentAngle - 90;
         }
-        const newTransform = match
-            ? transform.replace(/rotateY\([^)]+\)/, `rotateY(${rotateYValue}deg)`)
-            : transform + ` rotateY(${rotateYValue}deg)`;
-        flipBox.style.transform = newTransform;
+        flipBox.style.setProperty('--angle', `${targetAngle}deg`);
     });
 });
 // min + value % max loop
