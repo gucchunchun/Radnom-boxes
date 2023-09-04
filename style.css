@@ -63,6 +63,7 @@ h5::first-letter {
 
 body {
     width: 100vw;
+    height: 100vh;
     background-color: rgb(var(--c--bg));
     display: flex;
     flex-wrap: wrap;
@@ -147,7 +148,7 @@ body {
 }
 .button--row-manip {
     width: 6rem;
-    max-width: fit-content;
+    min-width: fit-content;
     padding: 0.5rem 1rem;
 }
 /*  Color-Option(hue/saturation/luminance) */
