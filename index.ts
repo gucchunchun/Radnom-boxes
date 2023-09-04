@@ -166,7 +166,7 @@ class Sketch {
         private _self: HTMLElement,
         private _type: ContainerType,
         private _boxInRow: number = 5,
-        private _colorOptions: ColorOptions = defaultColorOptions
+        private _colorOptions: ColorOptions = JSON.parse(JSON.stringify(defaultColorOptions))
     ) {}
 
     getBoxNumber(): number {
@@ -353,14 +353,12 @@ for(let i=0; i < sketches.length; i++) {
     let type:ContainerType;
     if(elem.classList.contains(ContainerType.Flex)) {
         type = ContainerType.Flex;
-        const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
-        sketch.initBoxes();
-        sketchFlex = sketch;
+        sketchFlex = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+        sketchFlex.initBoxes();
     } else if(elem.classList.contains(ContainerType.Grid)) {
         type = ContainerType.Grid;
-            const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
-        sketch.initBoxes();
-        sketchGrid = sketch;
+        sketchGrid = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+        sketchGrid.initBoxes();
     } else {
         throw new Error('not found container type class name');
     }

@@ -127,7 +127,7 @@ var ContainerType;
     ContainerType["Grid"] = "sketch--grid";
 })(ContainerType || (ContainerType = {}));
 class Sketch {
-    constructor(_self, _type, _boxInRow = 5, _colorOptions = defaultColorOptions) {
+    constructor(_self, _type, _boxInRow = 5, _colorOptions = JSON.parse(JSON.stringify(defaultColorOptions))) {
         this._self = _self;
         this._type = _type;
         this._boxInRow = _boxInRow;
@@ -310,15 +310,13 @@ for (let i = 0; i < sketches.length; i++) {
     let type;
     if (elem.classList.contains(ContainerType.Flex)) {
         type = ContainerType.Flex;
-        const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
-        sketch.initBoxes();
-        sketchFlex = sketch;
+        sketchFlex = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+        sketchFlex.initBoxes();
     }
     else if (elem.classList.contains(ContainerType.Grid)) {
         type = ContainerType.Grid;
-        const sketch = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
-        sketch.initBoxes();
-        sketchGrid = sketch;
+        sketchGrid = new Sketch(elem, type, BOX_NUMBER_IN_ROW);
+        sketchGrid.initBoxes();
     }
     else {
         throw new Error('not found container type class name');
