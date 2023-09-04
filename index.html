@@ -26,155 +26,173 @@
         >
           delete
         </button>
-        <section class="color-option flip-box">
-          <div class="color-option__ctr flip-box__side">
-            <p class="color-option__title">hue</p>
-            <div class="color-option__field field--num">
-              <label for="hue-min--num--flex" class="color-option__label"
-                >min</label
-              >
-              <input
-                id="hue-min--num--flex"
-                class="color-option__num min"
-                type="number"
-                value="0"
-                min="0"
-                max="360"
-              />
-              <span class="input__separator">-</span>
-              <label for="hue-max--num--flex" class="color-option__label"
-                >max</label
-              >
-              <input
-                id="hue-max--num--flex"
-                class="color-option__num max"
-                type="number"
-                value="360"
-                min="0"
-                max="360"
-              />
+        <section class="color-option">
+          <button
+            class="setting__button button--flip-manip left"
+            type="button"
+          ></button>
+          <button
+            class="setting__button button--flip-manip right"
+            type="button"
+          ></button>
+          <div class="color-option__flip-box">
+            <div class="color-option__ctr flip-box__side">
+              <p class="color-option__title">hue</p>
+              <div class="color-option__field field--num">
+                <label for="hue-min--num--flex" class="color-option__label"
+                  >min</label
+                >
+                <input
+                  id="hue-min--num--flex"
+                  class="color-option__num min"
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="360"
+                />
+                <span class="input__separator">-</span>
+                <label for="hue-max--num--flex" class="color-option__label"
+                  >max</label
+                >
+                <input
+                  id="hue-max--num--flex"
+                  class="color-option__num max"
+                  type="number"
+                  value="360"
+                  min="0"
+                  max="360"
+                />
+              </div>
+              <div class="color-option__field field--range">
+                <input
+                  id="hue-min--range--flex"
+                  class="color-option__range min"
+                  type="range"
+                  value="0"
+                  min="0"
+                  max="360"
+                  step="1"
+                />
+                <input
+                  id="hue-max--range--flex"
+                  class="color-option__range max"
+                  type="range"
+                  value="360"
+                  min="0"
+                  max="360"
+                  step="1"
+                />
+                <span class="color-option__range__progress"></span>
+              </div>
             </div>
-            <div class="color-option__field field--range">
-              <input
-                id="hue-min--range--flex"
-                class="color-option__range min"
-                type="range"
-                value="0"
-                min="0"
-                max="360"
-                step="1"
-              />
-              <input
-                id="hue-max--range--flex"
-                class="color-option__range max"
-                type="range"
-                value="360"
-                min="0"
-                max="360"
-                step="1"
-              />
-              <span class="color-option__range__progress"></span>
+            <div class="color-option__ctr flip-box__side">
+              <p class="color-option__title">saturation</p>
+              <div class="color-option__field field--num">
+                <label
+                  for="saturation-min--num--flex"
+                  class="color-option__label"
+                  >min</label
+                >
+                <input
+                  id="saturation-min--num--flex"
+                  class="color-option__num min"
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="100"
+                />
+                <span class="input__separator">-</span>
+                <label
+                  for="saturation-max--num--flex"
+                  class="color-option__label"
+                  >max</label
+                >
+                <input
+                  id="saturation-max--num--flex"
+                  class="color-option__num max"
+                  type="number"
+                  value="100"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="color-option__field field--range">
+                <input
+                  id="saturation-min--range--flex"
+                  class="color-option__range min"
+                  type="range"
+                  value="0"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <input
+                  id="saturation-max--range--flex"
+                  class="color-option__range max"
+                  type="range"
+                  value="100"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <span class="color-option__range__progress"></span>
+              </div>
             </div>
+            <div class="color-option__ctr flip-box__side">
+              <p class="color-option__title">luminance</p>
+              <div class="color-option__field field--num">
+                <label
+                  for="luminance-min--num--flex"
+                  class="color-option__label"
+                  >min</label
+                >
+                <input
+                  id="luminance-min--num--flex"
+                  class="color-option__num min"
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="100"
+                />
+                <span class="input__separator">-</span>
+                <label
+                  for="luminance-max--num--flex"
+                  class="color-option__label"
+                  >max</label
+                >
+                <input
+                  id="luminance-max--num--flex"
+                  class="color-option__num max"
+                  type="number"
+                  value="100"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div class="color-option__field field--range">
+                <input
+                  id="luminance-min--range--flex"
+                  class="color-option__range min"
+                  type="range"
+                  value="0"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <input
+                  id="luminance-max--range--flex"
+                  class="color-option__range max"
+                  type="range"
+                  value="100"
+                  min="0"
+                  max="100"
+                  step="1"
+                />
+                <span class="color-option__range__progress"></span>
+              </div>
+            </div>
+            <div class="color-option__ctr flip-box__side"></div>
           </div>
-          <div class="color-option__ctr flip-box__side">
-            <p class="color-option__title">saturation</p>
-            <div class="color-option__field field--num">
-              <label for="saturation-min--num--flex" class="color-option__label"
-                >min</label
-              >
-              <input
-                id="saturation-min--num--flex"
-                class="color-option__num min"
-                type="number"
-                value="0"
-                min="0"
-                max="100"
-              />
-              <span class="input__separator">-</span>
-              <label for="saturation-max--num--flex" class="color-option__label"
-                >max</label
-              >
-              <input
-                id="saturation-max--num--flex"
-                class="color-option__num max"
-                type="number"
-                value="100"
-                min="0"
-                max="100"
-              />
-            </div>
-            <div class="color-option__field field--range">
-              <input
-                id="saturation-min--range--flex"
-                class="color-option__range min"
-                type="range"
-                value="0"
-                min="0"
-                max="100"
-                step="1"
-              />
-              <input
-                id="saturation-max--range--flex"
-                class="color-option__range max"
-                type="range"
-                value="100"
-                min="0"
-                max="100"
-                step="1"
-              />
-              <span class="color-option__range__progress"></span>
-            </div>
-          </div>
-          <div class="color-option__ctr flip-box__side">
-            <p class="color-option__title">luminance</p>
-            <div class="color-option__field field--num">
-              <label for="luminance-min--num--flex" class="color-option__label"
-                >min</label
-              >
-              <input
-                id="luminance-min--num--flex"
-                class="color-option__num min"
-                type="number"
-                value="0"
-                min="0"
-                max="100"
-              />
-              <span class="input__separator">-</span>
-              <label for="luminance-max--num--flex" class="color-option__label"
-                >max</label
-              >
-              <input
-                id="luminance-max--num--flex"
-                class="color-option__num max"
-                type="number"
-                value="100"
-                min="0"
-                max="100"
-              />
-            </div>
-            <div class="color-option__field field--range">
-              <input
-                id="luminance-min--range--flex"
-                class="color-option__range min"
-                type="range"
-                value="0"
-                min="0"
-                max="100"
-                step="1"
-              />
-              <input
-                id="luminance-max--range--flex"
-                class="color-option__range max"
-                type="range"
-                value="100"
-                min="0"
-                max="100"
-                step="1"
-              />
-              <span class="color-option__range__progress"></span>
-            </div>
-          </div>
-          <div class="color-option__ctr flip-box__side"></div>
         </section>
       </div>
     </div>

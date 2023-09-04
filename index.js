@@ -310,7 +310,8 @@ function validateInputValue(input, isMin = false, isHue = false) {
 const sketches = document.querySelectorAll('.sketch');
 const rowManipButtons = document.querySelectorAll('.button--row-manip');
 const rangeInputs = document.querySelectorAll('.color-option__range');
-const flipBox = document.querySelector('.flip-box');
+const flipBox = document.querySelector('.color-option__flip-box');
+const flipManipButtons = document.querySelectorAll('.button--flip-manip');
 const root = document.querySelector(':root');
 const BOX_NUMBER_IN_ROW = 6;
 let sketchFlex;
@@ -415,5 +416,34 @@ rangeInputs.forEach((input) => {
 });
 resizeFlipBox();
 window.addEventListener('resize', resizeFlipBox);
+flipManipButtons.forEach((button) => {
+    var _a;
+    const flipManipButton = button;
+    const isLeft = flipManipButton.classList.contains('left');
+    const flipBox = (_a = flipManipButton.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector('.color-option__flip-box');
+    if (!flipBox) {
+        throw new Error(`${flipManipButton}'s corresponding flipBox can not be found`);
+    }
+    flipManipButton.addEventListener('click', () => {
+        const flipBoxStyle = getComputedStyle(flipBox);
+        const transform = flipBoxStyle.transform;
+        const match = transform.match(/rotateY\(([^)]+)\)/);
+        let rotateYValue = match
+            ? isNaN(parseInt(match[1].replace('deg', '')))
+                ? 0
+                : parseInt(match[1].replace('deg', ''))
+            : 0;
+        if (isLeft) {
+            rotateYValue += 90;
+        }
+        else {
+            rotateYValue -= 90;
+        }
+        const newTransform = match
+            ? transform.replace(/rotateY\([^)]+\)/, `rotateY(${rotateYValue}deg)`)
+            : transform + ` rotateY(${rotateYValue}deg)`;
+        flipBox.style.transform = newTransform;
+    });
+});
 // min + value % max loop
 //# sourceMappingURL=index.js.map

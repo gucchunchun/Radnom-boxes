@@ -18,9 +18,11 @@
     --font-weight--bold: 800;
 
     --flip--width: 500px;
-    --flip--height: 160px;
+    --flip--height: 10rem;
 }
-
+/* html{
+    font-size: 32px;
+} */
 /* Reset */
 * {
     margin: 0;
@@ -124,9 +126,6 @@ body {
     margin: 1rem 0;
 }
 .setting__button{
-    width: 6rem;
-    max-width: fit-content;
-    padding: 0.5rem 1rem;
     border-radius: 5px;
     background-color: rgb(var(--c--secondary));
     color: rgb(var(--c--bg));
@@ -146,23 +145,67 @@ body {
     background-color: rgba(var(--c--secondary), 0.3);
     box-shadow: none;
 }
+.button--row-manip {
+    width: 6rem;
+    max-width: fit-content;
+    padding: 0.5rem 1rem;
+}
 /*  Color-Option(hue/saturation/luminance) */
 .color-option {
+    position: relative;
     width: 95%;
     height: fit-content;
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: scroll;
 }
-.color-option.flip-box {
+.color-option__flip-box {
     transition: all 0.5s;
     position: relative;
+    width: 100%;
     height: var(--flip--height);
     transform-style: preserve-3d;
-    overflow-x: visible;
+    transform: rotateY(0deg);
 }
-.color-option.flip-box:hover {
-    transform: rotateY(-90deg);
+.button--flip-manip {
+    ---width--flip-manip: 32px;
+    position: absolute;
+    z-index: 100000;
+    top: 50%;
+    transform: translate(-50%, -50%) translate3d(0, 0, calc(var(--flip--width) * 0.5));
+    width: var(---width--flip-manip);
+    aspect-ratio: 1;
+    background-color: rgba(var(--c--secondary), 0.4);
+}
+.button--flip-manip.left {
+    left: calc(var(---width--flip-manip));
+}
+.button--flip-manip.right {
+    left: calc(100% - var(---width--flip-manip));
+}
+.button--flip-manip::before {
+    --arrow--width: 50%;
+    --arrow--height: 5px;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left : 50%;
+    width: var(--arrow--width);
+    aspect-ratio: 1;
+    border-top: var(--arrow--height) solid rgb(var(--c--bg));
+    
+}
+.button--flip-manip.left::before {
+    left : 20%;
+    border-left: var(--arrow--height) solid rgb(var(--c--bg));
+    transform: rotate(-45deg);
+    transform-origin: left top;
+}
+.button--flip-manip.right::before {
+    left : 80%;
+    border-right: var(--arrow--height) solid rgb(var(--c--bg));
+    transform: translateX(-100%) rotate(45deg);
+    transform-origin: right top;
+
 }
 .color-option__ctr {
     width: 100%;
@@ -176,6 +219,7 @@ body {
     align-items: center;
     color: rgb(var(--c--tertiary));
 }
+
 .color-option__ctr.flip-box__side {
     --angle: 0deg;
     position: absolute;
